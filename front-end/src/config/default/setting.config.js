@@ -16,7 +16,7 @@ const setting = {
   baseURL:
     process.env.NODE_ENV === 'development' ? 'mock-server' : 'mock-server',
   //标题 （包括初次加载雪花屏的标题 页面的标题 浏览器的标题）
-  title: 'vue-admin-beautiful-antdv',
+  title: '餐厅自助结算系统',
   //标题分隔符
   titleSeparator: ' - ',
   //标题是否反转 如果为false:"page - title"，如果为ture:"title - page"
@@ -46,7 +46,7 @@ const setting = {
   //token失效回退到登录页时是否记录本次的路由
   recordRoute: true,
   //是否显示logo，不显示时设置false，显示时请填写remixIcon图标名称，暂时只支持设置remixIcon
-  logo: 'vuejs-fill',
+  logo: 'money-cny-box-line',
   //语言类型zh、en
   i18n: 'zh',
   //在哪些环境下显示高亮错误

@@ -75,7 +75,7 @@ def getContours(img, imgContour):
         x, y, w, h = cv2.boundingRect(approx)
         area = w*h
         minArea = 16000
-        maxArea = 50000
+        maxArea = 100000
         if area > minArea and area < maxArea and w/h < 2 and w/h > 0.5:
             cv2.drawContours(imgContour, cnt, -1, (255, 0, 255), 7)
             # draw the center of the shape on the image

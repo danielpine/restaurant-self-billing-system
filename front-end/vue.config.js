@@ -54,22 +54,22 @@ module.exports = {
     hot: true,
     port: devPort,
     open: true,
-    noInfo: false,
+    noInfo: true,
     overlay: {
       warnings: true,
       errors: true,
     },
     // 注释掉的地方是前端配置代理访问后端的示例
-    // proxy: {
-    //   [baseURL]: {
-    //     target: `http://你的后端接口地址`,
-    //     ws: true,
-    //     changeOrigin: true,
-    //     pathRewrite: {
-    //       ["^/" + baseURL]: "",
-    //     },
-    //   },
-    // },
+    proxy: {
+      '/socket': {
+        target: `ws://localhost:5000`,
+        ws: true,
+        changeOrigin: true,
+        // pathRewrite: {
+        //   ["^/socket"]: "",
+        // },
+      },
+    },
     after: mockServer(),
   },
   configureWebpack() {

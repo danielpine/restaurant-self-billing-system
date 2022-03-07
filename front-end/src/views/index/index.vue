@@ -1,13 +1,13 @@
 <template>
   <div class="index-container">
-    <version-information />
+    <welcome />
   </div>
 </template>
 
 <script>
-  import VersionInformation from './components/VersionInformation'
+  import Welcome from './components/Welcome'
   export default {
     name: 'Index',
-    components: { VersionInformation },
+    components: { Welcome },
   }
 </script>
