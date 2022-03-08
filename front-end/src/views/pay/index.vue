@@ -7,7 +7,7 @@
       tip="拼命加载中..."
     />
     <a-row type="flex" v-show="imgShow">
-      <a-col flex="100px">
+      <a-col flex="600px">
         <div>
           <img
             :src="imgSrc"
@@ -26,15 +26,37 @@
           autoplay="autoplay"
         ></video>
       </a-col>
-      <a-col flex="auto" style="text-align:center">
-        <a-card title="点餐详情" :bordered="false" style="width: 300px">
-          <a-button type="primary">重新识别</a-button>
+      <a-col flex="auto" style="text-align: center;">
+        <a-card
+          title="点餐详情"
+          :bordered="true"
+          style="width: 450px; margin-left: 50px;"
+          :style="{ height: height + 'px' }"
+        >
+          <a-input-number id="inputNumber" v-model="step" :min="1" :max="3" />
+          <div :style="{ height: height - 120 + 'px' }">
+            <span v-if="step == 1" class="vertical">请放入菜品...</span>
+            <span v-if="step == 2" class="vertical">
+              <a-spin :spinning="step == 2" size="large" tip="正在识别..." />
+            </span>
+            <ul v-if="currOrder">
+              <li></li>
+            </ul>
+          </div>
+          <a-row type="flex" v-if="step == 3">
+            <a-col flex="auto" style="text-align: center;">
+              <a-button type="primary">重新识别</a-button>
+            </a-col>
+            <a-col flex="auto" style="text-align: center;">
+              <a-button type="primary">模拟支付</a-button>
+            </a-col>
+          </a-row>
         </a-card>
       </a-col>
     </a-row>
     <canvas
       id="canvas"
-      style="display: none"
+      style="display: none;"
       :width="width"
       :height="height"
     ></canvas>
@@ -57,6 +79,8 @@
         imgSrc: null,
         imgShow: false,
         fps: 200,
+        step: 2, // 1 识别区为空等待放入 2 识别中  3 识别完成待支付
+        currOrder: null,
       }
     },
     mounted() {
@@ -81,7 +105,7 @@
         let h = document.body.clientHeight
         let w = document.body.clientWidth
         this.width = w * 0.5
-        this.height = h * 0.79
+        this.height = h * 0.7
       },
       clearTimer: function () {
         if (this.timer) {
@@ -102,6 +126,12 @@
           }
         }, this_.fps)
       },
+      processEvent: function (evt) {
+        let this_ = this
+        if (this.step == 2) {
+          this.imgSrc = this_.prefix + evt.data
+        }
+      },
       createWebSocket: function () {
         let this_ = this
         this.ws = new WebSocket('ws://' + location.host + '/socket')
@@ -113,13 +143,14 @@
           console.log('timer created')
         }
         this.ws.onmessage = function (evt) {
-          this_.imgSrc = this_.prefix + evt.data
+          this_.processEvent(evt)
         }
         this.ws.onclose = function () {
           console.log('Closed')
         }
         this.ws.onerror = function (err) {
-          alert('Error: ' + err)
+          console.log(err)
+          this_.clearTimer()
         }
       },
       openMedia: function () {
@@ -137,7 +168,8 @@
             this_.srcVideo.play()
           })
           .catch(function (err) {
-            alert(err)
+            console.log(err)
+            this_.clearTimer()
           })
         this_.webcamOpen = true
       },
@@ -157,6 +189,11 @@
   }
 </script>
 <style>
+  .vertical {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+  }
   .content {
     position: relative;
     top: 50%;
@@ -165,6 +202,6 @@
     transform: translateX(-50%);
   }
   .example {
-    height: 80vh;
+    height: 70vh;
   }
 </style>
