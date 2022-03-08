@@ -56,6 +56,8 @@
         this.photo = document.getElementById('photo')
         let h = document.body.clientHeight
         let w = document.body.clientWidth
+        this.width=w*0.5
+        this.height=h*0.79
         console.log(h, w)
       },
       clearTimer: function () {
