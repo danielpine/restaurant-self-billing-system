@@ -98,7 +98,7 @@ def detectShape(center,ponits):
         maxs=max(ds) 
         #compute the delta  
         delta=(maxs-mins)*2/(maxs+mins)
-        print(delta)    
+        # print(delta)    
         if delta>0.2:
             return 'eclipse'
         else:    

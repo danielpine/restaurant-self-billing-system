@@ -62,7 +62,7 @@ module.exports = {
     // 注释掉的地方是前端配置代理访问后端的示例
     proxy: {
       '/socket': {
-        target: `ws://localhost:5000`,
+        target: `ws://localhost:8000`,
         ws: true,
         changeOrigin: true,
         // pathRewrite: {

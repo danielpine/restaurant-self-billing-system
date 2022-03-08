@@ -113,6 +113,27 @@ export const asyncRoutes = [
     ],
   },
   {
+    path: '/order',
+    component: Layout,
+    redirect: '/order/list',
+    alwaysShow: true,
+    meta: {
+      title: '订单管理',
+      icon: 'list-unordered',
+    },
+    children: [
+      {
+        path: 'list',
+        name: 'list',
+        component: () => import('@/views/order'),
+        meta: {
+          title: '历史订单',
+          icon: 'history-line',
+        },
+      },
+    ],
+  },
+  {
     path: '/admin',
     component: Layout,
     redirect: '/admin/put',

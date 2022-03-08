@@ -16,6 +16,7 @@ def index():
 
 @sockets.route('/socket')
 def socket(ws):
+    print(request)
     while not ws.closed:
         try:
             msg = ws.receive()
