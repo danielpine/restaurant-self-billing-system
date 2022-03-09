@@ -75,7 +75,7 @@ def getContours(img, imgContour):
         cY = int(M["m01"] / M["m00"])
         x, y, w, h = cv2.boundingRect(approx)
         area = w*h
-        minArea = 12000
+        minArea = 10000
         maxArea = 100000
         if area > minArea and area < maxArea and w/h < 2 and w/h > 0.5:
             cv2.drawContours(imgContour, cnt, -1, (255, 0, 255), 7)

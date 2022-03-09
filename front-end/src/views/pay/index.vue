@@ -27,34 +27,37 @@
           ></video>
         </div>
       </a-col>
-      <a-col flex="auto" style="text-align: center;">
+      <a-col flex="auto" style="text-align: center">
         <a-card
           title="点餐详情"
           :bordered="true"
-          style="width: 450px; margin-left: 50px;"
+          style="width: 450px; margin-left: 50px"
           :style="{ height: height + 'px' }"
         >
-          <a-radio-group @change="change">
-            <a-radio :value="1">1</a-radio>
-            <a-radio :value="2">2</a-radio>
-            <a-radio :value="3">3</a-radio>
-          </a-radio-group>
-          <br />
-          {{ plates }}
           <div :style="{ height: height - 150 + 'px' }">
             <span v-if="step == 1" class="vertical">请放入菜品...</span>
             <span v-if="step == 2" class="vertical">
               <a-spin :spinning="step == 2" size="large" tip="正在识别..." />
             </span>
-            <ul v-if="currOrder">
-              <li></li>
-            </ul>
+            <div v-if="step == 3" class="dotted">
+              <a-divider dashed style="width: 50%">合并订单</a-divider>
+              <div class="vertical">
+                <p v-for="(v, i) in currOrder.items" :key="i">
+                  {{ v.type }}
+                  {{ v.unit }}x
+                  {{ v.count }}
+                </p>
+                <a-divider dashed />
+                <div>合计:¥{{ currOrder.sum }}</div>
+              </div>
+            </div>
+            <div v-if="step == 3" class="dotted-bottom"></div>
           </div>
           <a-row type="flex" v-if="step == 3">
-            <a-col flex="auto" style="text-align: center;">
+            <a-col flex="auto" style="text-align: center">
               <a-button type="primary">重新识别</a-button>
             </a-col>
-            <a-col flex="auto" style="text-align: center;">
+            <a-col flex="auto" style="text-align: center">
               <a-button type="primary">模拟支付</a-button>
             </a-col>
           </a-row>
@@ -63,7 +66,7 @@
     </a-row>
     <canvas
       id="canvas"
-      style="display: none;"
+      style="display: none"
       :width="width"
       :height="height"
     ></canvas>
@@ -90,6 +93,7 @@
         currOrder: null,
         plates: [],
         accumulator: 0,
+        detectCount: 10,
       }
     },
     mounted() {
@@ -154,12 +158,66 @@
           this.imgSrc = this_.prefix + data.image
           if (JSON.stringify(this.plates) == JSON.stringify(data.plates)) {
             this.accumulator++
-            console.log(this.accumulator)
+            console.log(this.step, this.accumulator)
           } else {
             this.accumulator = 0
           }
           this.plates = data.plates
+          if (this.accumulator > this.detectCount) {
+            this.step = 3
+            this.clearTimer()
+            this.createOrder()
+          }
         }
+      },
+      createOrder: function () {
+        let currOrder = {}
+        let object = this.plates
+        for (const key in object) {
+          if (Object.hasOwnProperty.call(object, key)) {
+            const item = object[key]
+            console.log(item, currOrder[item])
+            if (currOrder[item] == undefined) {
+              currOrder[item] = 1
+            } else {
+              currOrder[item] = currOrder[item] + 1
+            }
+          }
+        }
+        let order = {
+          items: [],
+          sum: 0,
+        }
+        for (const key in currOrder) {
+          console.log(key)
+          const e = currOrder[key]
+          if (key == 'rect') {
+            console.log('方形菜品 ¥5 x' + e)
+            order.items.push({
+              type: '方形菜品',
+              unit: '¥5',
+              count: e,
+            })
+            order.sum = order.sum + 5 * e
+          } else if (key == 'eclipse') {
+            console.log('椭圆菜品 ¥10 x' + e)
+            order.items.push({
+              type: '椭圆菜品',
+              unit: '¥10',
+              count: e,
+            })
+            order.sum = order.sum + 10 * e
+          } else if (key == 'circle') {
+            console.log('圆形菜品 ¥15 x' + e)
+            order.items.push({
+              type: '圆形菜品',
+              unit: '¥15',
+              count: e,
+            })
+            order.sum = order.sum + 15 * e
+          }
+        }
+        this.currOrder = order
       },
       createWebSocket: function () {
         let this_ = this
@@ -235,5 +293,31 @@
   }
   .example {
     height: 70vh;
+  }
+
+  .dotted {
+    position: relative;
+    background: linear-gradient(to bottom, white, lightgray);
+    width: 74%;
+    height: 90%;
+    margin: 0 auto;
+  }
+  .dotted-bottom {
+    position: relative;
+    width: 74%;
+    height: 20px;
+    margin: 0 auto;
+    background: white;
+    background-image: radial-gradient(
+      16px at 25px 25px,
+      transparent,
+      transparent,
+      transparent,
+      transparent,
+      lightgray
+    );
+    background-size: 50px 50px;
+    background-repeat: repeat-x;
+    background-position: 0px 0px;
   }
 </style>
