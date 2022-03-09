@@ -12,18 +12,17 @@ class ConnectHandler(tornado.websocket.WebSocketHandler) :
 
     def open(self) :
         '''新的websocket连接后被调动'''
-        self.write_message('Welcome')
+        # self.write_message('Welcome')
+        print('connected...')
 
     def on_close(self) :
         '''websocket连接关闭后被调用'''
+        print('closed...')
 
     def on_message(self, message) :
         '''接收到客户端消息时被调用'''
         try:
-            # print(len(message))
-            start=time.time()
             result = detect(message)
-            # print("time:"+str(time.time()-start))
             self.write_message(result)  # 向客服端发送
         except Exception as e:
             traceback.print_exc()

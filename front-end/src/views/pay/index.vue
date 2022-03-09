@@ -6,25 +6,26 @@
       size="large"
       tip="拼命加载中..."
     />
-    <a-row type="flex" v-show="imgShow">
+    <a-row type="flex" v-show="imgShow || step == 1">
       <a-col flex="600px">
         <div>
           <img
+            v-show="imgShow"
             :src="imgSrc"
             :width="width"
             :height="height"
             id="photo"
             @load="onload"
           />
+          <video
+            v-show="!imgShow"
+            id="video"
+            class="src-video"
+            :width="width"
+            :height="height"
+            autoplay="autoplay"
+          ></video>
         </div>
-        <video
-          v-show="!imgShow"
-          id="video"
-          class="src-video"
-          :width="width"
-          :height="height"
-          autoplay="autoplay"
-        ></video>
       </a-col>
       <a-col flex="auto" style="text-align: center;">
         <a-card
@@ -33,8 +34,14 @@
           style="width: 450px; margin-left: 50px;"
           :style="{ height: height + 'px' }"
         >
-          <a-input-number id="inputNumber" v-model="step" :min="1" :max="3" />
-          <div :style="{ height: height - 120 + 'px' }">
+          <a-radio-group @change="change">
+            <a-radio :value="1">1</a-radio>
+            <a-radio :value="2">2</a-radio>
+            <a-radio :value="3">3</a-radio>
+          </a-radio-group>
+          <br />
+          {{ plates }}
+          <div :style="{ height: height - 150 + 'px' }">
             <span v-if="step == 1" class="vertical">请放入菜品...</span>
             <span v-if="step == 2" class="vertical">
               <a-spin :spinning="step == 2" size="large" tip="正在识别..." />
@@ -68,6 +75,7 @@
     name: 'Index',
     data() {
       return {
+        step: 2, // 1 识别区为空等待放入 2 识别中  3 识别完成待支付
         width: '1200',
         height: '900',
         prefix: 'data:image/png;base64,',
@@ -79,8 +87,9 @@
         imgSrc: null,
         imgShow: false,
         fps: 200,
-        step: 2, // 1 识别区为空等待放入 2 识别中  3 识别完成待支付
         currOrder: null,
+        plates: [],
+        accumulator: 0,
       }
     },
     mounted() {
@@ -121,15 +130,35 @@
             let canvas = document.getElementById('canvas')
             let ctx = canvas.getContext('2d')
             ctx.drawImage(this_.srcVideo, 0, 0, this_.width, this_.height)
-            var data = canvas.toDataURL('image/jpeg', 0.3).split(',')
+            this_.videoImg = canvas.toDataURL('image/jpeg', 0.3)
+            var data = this_.videoImg.split(',')
             this_.ws.send(data[1])
           }
         }, this_.fps)
       },
       processEvent: function (evt) {
         let this_ = this
+        let data = JSON.parse(evt.data)
+        if (data.plates.length == 0) {
+          this.imgShow = true
+          this.imgSrc = this_.videoImg
+          this.step = 1
+          this.plates = []
+          this.accumulator = 0
+        } else {
+          this.step = 2
+        }
+
         if (this.step == 2) {
-          this.imgSrc = this_.prefix + evt.data
+          this.imgShow = true
+          this.imgSrc = this_.prefix + data.image
+          if (JSON.stringify(this.plates) == JSON.stringify(data.plates)) {
+            this.accumulator++
+            console.log(this.accumulator)
+          } else {
+            this.accumulator = 0
+          }
+          this.plates = data.plates
         }
       },
       createWebSocket: function () {
@@ -184,6 +213,9 @@
           track.stop()
         })
         this.clearTimer()
+      },
+      change: function (evt) {
+        this.step = evt.target.value
       },
     },
   }

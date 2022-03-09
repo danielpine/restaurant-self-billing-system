@@ -63,6 +63,7 @@ def stackImages(scale, imgArray):
 def getContours(img, imgContour):
     contours, hierarchy = cv2.findContours(
         img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    plates = []
     for cnt in contours:
         # area = cv2.contourArea(cnt)
         peri = cv2.arcLength(cnt, True)
@@ -85,24 +86,29 @@ def getContours(img, imgContour):
                         20, y + 20), cv2.FONT_HERSHEY_COMPLEX, 0.7, (0, 255, 0), 2)
             cv2.putText(imgContour, "A: " + str(int(area)), (x + 20,
                         y + 42), cv2.FONT_HERSHEY_COMPLEX, 0.7, (0, 255, 0), 2)
-            cv2.putText(imgContour, "S: " + detectShape((cX,cY),approx), (x + 20,
+            shape = detectShape((cX, cY), approx)
+            cv2.putText(imgContour, "S: " + shape, (x + 20,
                         y + 65), cv2.FONT_HERSHEY_COMPLEX, 0.7, (0, 255, 0), 2)
+            plates.append(shape)
+    return plates
 
-def detectShape(center,ponits):
-    if len(ponits)<=5:
+
+def detectShape(center, ponits):
+    if len(ponits) <= 5:
         return 'rect'
     else:
-        #compute the distance from every points to the center
-        ds=[((p[0][0]-center[0])**2+(p[0][1]-center[1])**2)**0.5 for p in ponits]
-        mins=min(ds)
-        maxs=max(ds) 
-        #compute the delta  
-        delta=(maxs-mins)*2/(maxs+mins)
-        # print(delta)    
-        if delta>0.2:
+        # compute the distance from every points to the center
+        ds = [((p[0][0]-center[0])**2+(p[0][1]-center[1])**2)**0.5 for p in ponits]
+        mins = min(ds)
+        maxs = max(ds)
+        # compute the delta
+        delta = (maxs-mins)*2/(maxs+mins)
+        # print(delta)
+        if delta > 0.2:
             return 'eclipse'
-        else:    
+        else:
             return 'circle'
+
 
 def image_to_base64(image_np):
     image = cv2.imencode('.jpg', image_np)[1]
@@ -130,7 +136,10 @@ def detect(base64_code):
     imgCanny = cv2.Canny(imgGray, threshold1, threshold2)
     kernel = np.ones((5, 5))
     imgDil = cv2.dilate(imgCanny, kernel, iterations=1)
-    getContours(imgDil, imgContour)
+    plates = getContours(imgDil, imgContour)
     # imgStack = stackImages(0.8, ([img, imgCanny],  [imgDil, imgContour]))
     imgStack = stackImages(0.8,  ([imgContour]))
-    return image_to_base64(imgStack)
+    return {
+        'plates': plates,
+        'image': image_to_base64(imgStack)
+    }
