@@ -1,6 +1,37 @@
 <template>
   <div class="example">
     <a-drawer
+      title="Pay"
+      placement="right"
+      :width="520"
+      :closable="false"
+      :visible="modalVisible"
+      :get-container="false"
+      @close="onModalClose"
+      class="settings"
+      v-if="currOrder && currOrder.sum"
+    >
+      <a-row>
+        <h3>支付金额：¥{{ currOrder.sum }}</h3>
+      </a-row>
+      <a-row>
+        <a-radio-group name="radioGroup" :default-value="1">
+          <a-radio :value="1">
+            余额支付
+          </a-radio>
+          <a-radio :value="2">
+            扫码支付
+          </a-radio>
+        </a-radio-group>
+      </a-row>
+      <a-row>
+        <a-button type="primary" @click="() => (modalVisible = false)">
+          <vab-icon :icon="'check-fill'"></vab-icon>
+          确认支付
+        </a-button>
+      </a-row>
+    </a-drawer>
+    <a-drawer
       title="Settings"
       placement="right"
       :width="520"
@@ -8,6 +39,7 @@
       :visible="visible"
       :get-container="false"
       @close="onClose"
+      class="settings"
     >
       <a-row>
         <a-col :span="4">Threshold1</a-col>
@@ -28,7 +60,25 @@
         </a-col>
       </a-row>
       <a-row>
-        <a-col :span="4">Area Range</a-col>
+        <a-col :span="4">FrontScale</a-col>
+        <a-col :span="20">
+          <a-slider
+            :default-value="config.frontScale"
+            @change="frontScaleChange"
+          />
+        </a-col>
+      </a-row>
+      <a-row>
+        <a-col :span="4">BackScale</a-col>
+        <a-col :span="20">
+          <a-slider
+            :default-value="config.backScale"
+            @change="backScaleChange"
+          />
+        </a-col>
+      </a-row>
+      <a-row>
+        <a-col :span="4">AreaRange</a-col>
         <a-col :span="20">
           <a-slider
             range
@@ -36,6 +86,40 @@
             :min="0"
             :max="100000"
             @change="areaChange"
+          />
+        </a-col>
+      </a-row>
+      <a-row style="margin-top: 10px;">
+        <a-col :span="5">KernelSize</a-col>
+        <a-col :span="19">
+          <a-input-number
+            :default-value="config.kernelSize"
+            :min="1"
+            :max="1000"
+            @change="kernelSizeChange"
+          />
+        </a-col>
+      </a-row>
+      <a-row style="margin-top: 10px;">
+        <a-col :span="5">GaussianSize</a-col>
+        <a-col :span="19">
+          <a-input-number
+            :default-value="config.gaussianSize"
+            :min="1"
+            :max="1000"
+            :step="2"
+            @change="gaussianSizeChange"
+          />
+        </a-col>
+      </a-row>
+      <a-row style="margin-top: 10px;">
+        <a-col :span="5">DetectCount</a-col>
+        <a-col :span="19">
+          <a-input-number
+            :default-value="config.detectCount"
+            :min="3"
+            :max="20"
+            @change="detectCountChange"
           />
         </a-col>
       </a-row>
@@ -68,7 +152,7 @@
           ></video>
         </div>
       </a-col>
-      <a-col flex="auto" style="text-align: center">
+      <a-col flex="auto" style="text-align: center;">
         <a-button
           type="dashed"
           shape="circle"
@@ -78,9 +162,10 @@
           <vab-icon :icon="'bug-line'"></vab-icon>
         </a-button>
         <a-card
-          title="点餐详情"
+          title="合并订单"
+          :headStyle="{ background: 'aliceblue' }"
           :bordered="true"
-          style="width: 450px; margin-left: 50px"
+          style="width: 450px; margin-left: 50px; background: white;"
           :style="{ height: height + 'px' }"
         >
           <div :style="{ height: height - 150 + 'px' }">
@@ -89,31 +174,31 @@
               <a-spin :spinning="step == 2" size="large" tip="正在识别..." />
             </span>
             <div v-if="step == 3" class="dotted">
-              <a-divider dashed></a-divider>
-              <div class="vertical" style="width: 180px; margin: 0 auto">
+              <a-divider dashed style="height: 3px;"></a-divider>
+              <div class="vertical" style="width: 250px; margin: 0 auto;">
                 <a-row v-for="(v, i) in currOrder.items" :key="i">
-                  <a-col :span="12" style="text-align: left">
+                  <a-col :span="12" style="text-align: left;">
                     <h3>{{ v.type }}</h3>
                   </a-col>
                   <a-col :span="1"></a-col>
-                  <a-col :span="5" style="text-align: left">
+                  <a-col :span="5" style="text-align: left;">
                     <h3>{{ v.unit }}</h3>
                   </a-col>
-                  <a-col :span="6" style="text-align: right">
+                  <a-col :span="6" style="text-align: left;">
                     <h3>{{ 'x' + v.count }}</h3>
                   </a-col>
                 </a-row>
                 <a-divider dashed></a-divider>
                 <a-row>
-                  <a-col :span="12" style="text-align: left">
+                  <a-col :span="12" style="text-align: left;">
                     <h3>合计:</h3>
                   </a-col>
                   <a-col :span="1"></a-col>
-                  <a-col :span="5" style="text-align: left">
+                  <a-col :span="5" style="text-align: left;">
                     <h3>{{ '¥' + currOrder.sum }}</h3>
                   </a-col>
-                  <a-col :span="6" style="text-align: right">
-                    <h3>{{ '/ ' + currOrder.volume + ' 份' }}</h3>
+                  <a-col :span="6" style="text-align: left;">
+                    <h3>{{ currOrder.volume + '(份)' }}</h3>
                   </a-col>
                 </a-row>
               </div>
@@ -121,11 +206,13 @@
             <div v-if="step == 3" class="dotted-bottom"></div>
           </div>
           <a-row type="flex" v-if="step == 3">
-            <a-col flex="auto" style="text-align: center">
+            <a-col flex="auto" style="text-align: center;">
               <a-button type="primary" @click="reDetect">重新识别</a-button>
             </a-col>
-            <a-col flex="auto" style="text-align: center">
-              <a-button type="primary">模拟支付</a-button>
+            <a-col flex="auto" style="text-align: center;">
+              <a-button type="primary" @click="() => (modalVisible = true)">
+                模拟支付
+              </a-button>
             </a-col>
           </a-row>
         </a-card>
@@ -133,7 +220,7 @@
     </a-row>
     <canvas
       id="canvas"
-      style="display: none"
+      style="display: none;"
       :width="width"
       :height="height"
     ></canvas>
@@ -153,6 +240,11 @@
           threshold2: 74,
           minArea: 10000,
           maxArea: 50000,
+          detectCount: 10,
+          frontScale: 50,
+          backScale: 70,
+          kernelSize: 5,
+          gaussianSize: 7,
         },
         width: '1200',
         height: '900',
@@ -165,12 +257,15 @@
         imgSrc: null,
         imgShow: false,
         visible: false,
+        modalVisible: false,
         fps: 200,
         currOrder: null,
         plates: [],
         accumulator: 0,
-        detectCount: 10,
       }
+    },
+    created() {
+      this.loadConfig()
     },
     mounted() {
       this.initSource()
@@ -180,15 +275,50 @@
       this.closeMedia()
     },
     methods: {
+      loadConfig() {
+        let cache = window.localStorage.getItem('config')
+        if (cache) {
+          cache = JSON.parse(cache)
+          for (const key in cache) {
+            this.config[key] = cache[key]
+          }
+        }
+      },
+      saveConfig() {
+        window.localStorage.setItem('config', JSON.stringify(this.config))
+      },
+      frontScaleChange(val) {
+        this.config.frontScale = val
+        this.saveConfig()
+      },
+      backScaleChange(val) {
+        this.config.backScale = val
+        this.saveConfig()
+      },
+      kernelSizeChange(val) {
+        this.config.kernelSize = val
+        this.saveConfig()
+      },
+      gaussianSizeChange(val) {
+        this.config.gaussianSize = val
+        this.saveConfig()
+      },
+      detectCountChange(val) {
+        this.config.detectCount = val
+        this.saveConfig()
+      },
       threshold1Change(val) {
         this.config.threshold1 = val
+        this.saveConfig()
       },
       threshold2Change(val) {
         this.config.threshold2 = val
+        this.saveConfig()
       },
       areaChange(val) {
         this.config.minArea = val[0]
         this.config.maxArea = val[1]
+        this.saveConfig()
       },
       afterVisibleChange(val) {
         console.log('visible', val)
@@ -198,6 +328,9 @@
       },
       onClose() {
         this.visible = false
+      },
+      onModalClose() {
+        this.modalVisible = false
       },
       onload: function () {
         if (!this.imgShow) {
@@ -229,9 +362,17 @@
             let canvas = document.getElementById('canvas')
             let ctx = canvas.getContext('2d')
             ctx.drawImage(this_.srcVideo, 0, 0, this_.width, this_.height)
-            this_.videoImg = canvas.toDataURL('image/jpeg', 0.3)
+            this_.videoImg = canvas.toDataURL(
+              'image/jpeg',
+              this_.config.frontScale / 100
+            )
             var data = this_.videoImg.split(',')
-            this_.ws.send(data[1])
+            this_.ws.send(
+              JSON.stringify({
+                config: this_.config,
+                image: data[1],
+              })
+            )
           }
         }, this_.fps)
       },
@@ -248,7 +389,10 @@
           this.step = 2
         }
 
-        if (this.step == 2) {
+        if (this.visible) {
+          this.imgShow = true
+          this.imgSrc = this_.prefix + data.image
+        } else if (this.step == 2) {
           this.imgShow = true
           this.imgSrc = this_.prefix + data.image
           if (JSON.stringify(this.plates) == JSON.stringify(data.plates)) {
@@ -258,7 +402,7 @@
             this.accumulator = 0
           }
           this.plates = data.plates
-          if (this.accumulator > this.detectCount) {
+          if (this.accumulator > this.config.detectCount) {
             this.step = 3
             this.clearTimer()
             this.createOrder()
@@ -398,19 +542,32 @@
     height: 70vh;
   }
 
+  h3 {
+    font-size: 18px;
+    font-family: '微软雅黑';
+    font-weight: bold;
+  }
+
+  .shadow {
+    box-shadow: 2px 2px 5px #000;
+  }
+
   .dotted {
     position: relative;
     background: linear-gradient(to bottom, white, lightgray);
     width: 74%;
     height: 90%;
     margin: 0 auto;
+    box-shadow: 3px 6px 5px #000;
+    border-bottom: none;
   }
   .dotted-bottom {
+    border-top: none;
+    box-shadow: 3px 6px 5px #000;
     position: relative;
     width: 74%;
     height: 20px;
     margin: 0 auto;
-    background: white;
     background-image: radial-gradient(
       16px at 25px 25px,
       transparent,
@@ -427,6 +584,9 @@
     position: absolute;
     top: 5px;
     right: 5px;
+  }
+  .settings .ant-col {
+    line-height: 36px;
   }
 </style>
 <style lang="less">

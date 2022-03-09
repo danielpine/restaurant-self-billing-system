@@ -2,10 +2,13 @@ import base64
 import math
 import cv2
 import cv2
+from gevent import config
 import numpy as np
+
 
 def empty(a):
     pass
+
 
 def stackImages(scale, imgArray):
     rows = len(imgArray)
@@ -46,10 +49,12 @@ def stackImages(scale, imgArray):
     return ver
 
 
-def getContours(img, imgContour):
+def getContours(img, imgContour, config):
     contours, hierarchy = cv2.findContours(
         img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     plates = []
+    minArea = config['minArea']
+    maxArea = config['maxArea']
     for cnt in contours:
         # area = cv2.contourArea(cnt)
         peri = cv2.arcLength(cnt, True)
@@ -60,8 +65,6 @@ def getContours(img, imgContour):
         cY = int(M["m01"] / M["m00"])
         x, y, w, h = cv2.boundingRect(approx)
         area = w*h
-        minArea = 10000
-        maxArea = 100000
         if area > minArea and area < maxArea and w/h < 2 and w/h > 0.5:
             cv2.drawContours(imgContour, cnt, -1, (255, 0, 255), 7)
             # draw the center of the shape on the image
@@ -111,19 +114,23 @@ def base64_to_image(base64_code):
     return img
 
 
-def detect(base64_code):
+def detect(message):
+    base64_code = message['image']
+    config = message['config']
     img = base64_to_image(base64_code)
     imgContour = img.copy()
-    imgBlur = cv2.GaussianBlur(img, (7, 7), 1)
+    imgBlur = cv2.GaussianBlur(
+        img, (config['gaussianSize'], config['gaussianSize']), 1)
     imgGray = cv2.cvtColor(imgBlur, cv2.COLOR_BGR2GRAY)
-    threshold1 = 74
-    threshold2 = 51
+    threshold1 = config['threshold1']
+    threshold2 = config['threshold2']
     imgCanny = cv2.Canny(imgGray, threshold1, threshold2)
-    kernel = np.ones((5, 5))
+    kernel = np.ones((config['kernelSize'], config['kernelSize']))
     imgDil = cv2.dilate(imgCanny, kernel, iterations=1)
-    plates = getContours(imgDil, imgContour)
-    # imgStack = stackImages(0.8, ([img, imgCanny],  [imgDil, imgContour]))
-    imgStack = stackImages(0.8,  ([imgContour]))
+    plates = getContours(imgDil, imgContour, config)
+    # imgStack = stackImages(config['backScale']/100,
+    #                        ([img, imgCanny],  [imgDil, imgContour]))
+    imgStack = stackImages(config['backScale']/100,  ([imgContour]))
     return {
         'plates': plates,
         'image': image_to_base64(imgStack)
