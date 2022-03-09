@@ -4,22 +4,8 @@ import cv2
 import cv2
 import numpy as np
 
-frameWidth = 640
-frameHeight = 480
-# cap = cv2.VideoCapture(0)
-# cap.set(3, frameWidth)
-# cap.set(4, frameHeight)
-
-
 def empty(a):
     pass
-
-# cv2.namedWindow("Parameters")
-# cv2.resizeWindow("Parameters",640,240)
-# cv2.createTrackbar("Threshold1","Parameters",23,255,empty)
-# cv2.createTrackbar("Threshold2","Parameters",20,255,empty)
-# cv2.createTrackbar("Area","Parameters",5000,30000,empty)
-
 
 def stackImages(scale, imgArray):
     rows = len(imgArray)
@@ -68,7 +54,6 @@ def getContours(img, imgContour):
         # area = cv2.contourArea(cnt)
         peri = cv2.arcLength(cnt, True)
         approx = cv2.approxPolyDP(cnt, 0.03 * peri, True)
-        # print(approx)
         # compute the center of the contour
         M = cv2.moments(cnt)
         cX = int(M["m10"] / M["m00"])
