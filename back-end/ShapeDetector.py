@@ -54,10 +54,9 @@ items={
     'eclipse':'椭圆菜品'
 }
 
-def getContours(img, imgContour, config):
+def getContours(img, imgContour, config,plates,texts):
     contours, hierarchy = cv2.findContours(
         img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-    plates = []
     minArea = config['minArea']
     maxArea = config['maxArea']
     for cnt in contours:
@@ -79,18 +78,33 @@ def getContours(img, imgContour, config):
             shape = detectShape((cX, cY), approx)
             # draw the center of the shape on the image
             # cv2.circle(imgContour, (cX, cY), 3, (255, 255, 255), -1)
-            # cv2.drawContours(imgContour, cnt, -1, (255, 0, 255), 2)
-            cv2.rectangle(imgContour, (x-10, y-10), (x + w+ 10, y + h+ 10), (255, 0, 0), 2)
+            # cv2.drawContours(imgContour, cnt, -1, (255, 0, 0), 2)
+            cv2.rectangle(imgContour, (x, y), (x + w, y + h), (255, 144, 24), 1)
+            cv2.rectangle(imgContour, (x, y), (x + 70, y + 20), (255, 144, 24), -1)
             # cv2.putText(imgContour, "P: " + str(len(approx)), (x +
             #             20, y + 20), cv2.FONT_HERSHEY_COMPLEX, 0.7, (0, 255, 0), 1)
             # cv2.putText(imgContour, "A: " + str(int(area)), (x + 20,
             #             y + 42), cv2.FONT_HERSHEY_COMPLEX, 0.7, (0, 255, 0), 1)
             # cv2.putText(imgContour, "S: " + shape, (x + 20,
             #             y + 65), cv2.FONT_HERSHEY_COMPLEX, 0.7, (0, 255, 0), 2)
-            cv2.putText(imgContour,  items[shape], (x + 10, y + 10), cv2.FONT_HERSHEY_COMPLEX, 0.7, (255, 0, 0), 2)
+            # cv2.putText(imgContour,  items[shape], (x + 10, y + 10), cv2.FONT_HERSHEY_COMPLEX, 0.7, (255, 0, 0), 2)
+            texts.append([items[shape], (x+5, y+2)])
             plates.append(shape)
     return plates
+from PIL import Image, ImageDraw, ImageFont
 
+
+def putText(img, text, xy):
+	# 判断图片是否为ndarray格式，转为RGB图片
+    if (isinstance(img, np.ndarray)):
+        img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+    draw = ImageDraw.Draw(img)
+    # 参数依次为 字体、字体大小、编码
+    fontStyle = ImageFont.truetype("font/simsun.ttc", 16, encoding="utf-8")
+    # 参数依次为位置、文本、颜色、字体
+    draw.text((xy[0], xy[1]), text, font=fontStyle,fill='white')
+    # 转回BGR图片、ndarray格式
+    return cv2.cvtColor(np.asarray(img), cv2.COLOR_RGB2BGR) 
 
 def detectShape(center, ponits):
     if len(ponits) <= 5:
@@ -138,9 +152,13 @@ def detect(message):
     imgCanny = cv2.Canny(imgGray, threshold1, threshold2)
     kernel = np.ones((config['kernelSize'], config['kernelSize']))
     imgDil = cv2.dilate(imgCanny, kernel, iterations=1)
-    plates = getContours(imgDil, imgContour, config)
+    plates = []
+    texts = []
+    getContours(imgDil, imgContour, config,plates,texts)
     # imgStack = stackImages(config['backScale']/100,
     #                        ([img, imgCanny],  [imgDil, imgContour]))
+    for i in texts:
+        imgContour=putText(imgContour,i[0],i[1])
     imgStack = stackImages(config['backScale']/100,  ([imgContour]))
     return {
         'plates': plates,
