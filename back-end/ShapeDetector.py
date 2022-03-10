@@ -48,6 +48,11 @@ def stackImages(scale, imgArray):
         ver = hor
     return ver
 
+items={
+    'rect':'方形菜品',
+    'circle':'圆形菜品',
+    'eclipse':'椭圆菜品'
+}
 
 def getContours(img, imgContour, config):
     contours, hierarchy = cv2.findContours(
@@ -66,17 +71,23 @@ def getContours(img, imgContour, config):
         x, y, w, h = cv2.boundingRect(approx)
         area = w*h
         if area > minArea and area < maxArea and w/h < 2 and w/h > 0.5:
-            cv2.drawContours(imgContour, cnt, -1, (255, 0, 255), 7)
-            # draw the center of the shape on the image
-            cv2.circle(imgContour, (cX, cY), 7, (255, 255, 255), -1)
-            cv2.rectangle(imgContour, (x, y), (x + w, y + h), (0, 255, 0), 5)
-            cv2.putText(imgContour, "P: " + str(len(approx)), (x +
-                        20, y + 20), cv2.FONT_HERSHEY_COMPLEX, 0.7, (0, 255, 0), 2)
-            cv2.putText(imgContour, "A: " + str(int(area)), (x + 20,
-                        y + 42), cv2.FONT_HERSHEY_COMPLEX, 0.7, (0, 255, 0), 2)
+            # i=0
+            # for p in approx:
+            #     cv2.circle(imgContour, (p[0,0], p[0,1]), 5, (0, 0, 255), -1)
+            #     cv2.putText(imgContour, str(i), (p[0,0], p[0,1]), cv2.FONT_HERSHEY_COMPLEX, 0.7, (0, 255, 0), 2)
+            #     i+=1
             shape = detectShape((cX, cY), approx)
-            cv2.putText(imgContour, "S: " + shape, (x + 20,
-                        y + 65), cv2.FONT_HERSHEY_COMPLEX, 0.7, (0, 255, 0), 2)
+            # draw the center of the shape on the image
+            # cv2.circle(imgContour, (cX, cY), 3, (255, 255, 255), -1)
+            # cv2.drawContours(imgContour, cnt, -1, (255, 0, 255), 2)
+            cv2.rectangle(imgContour, (x-10, y-10), (x + w+ 10, y + h+ 10), (255, 0, 0), 2)
+            # cv2.putText(imgContour, "P: " + str(len(approx)), (x +
+            #             20, y + 20), cv2.FONT_HERSHEY_COMPLEX, 0.7, (0, 255, 0), 1)
+            # cv2.putText(imgContour, "A: " + str(int(area)), (x + 20,
+            #             y + 42), cv2.FONT_HERSHEY_COMPLEX, 0.7, (0, 255, 0), 1)
+            # cv2.putText(imgContour, "S: " + shape, (x + 20,
+            #             y + 65), cv2.FONT_HERSHEY_COMPLEX, 0.7, (0, 255, 0), 2)
+            cv2.putText(imgContour,  items[shape], (x + 10, y + 10), cv2.FONT_HERSHEY_COMPLEX, 0.7, (255, 0, 0), 2)
             plates.append(shape)
     return plates
 
