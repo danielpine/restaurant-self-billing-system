@@ -20,6 +20,12 @@ export const constantRoutes = [
     hidden: true,
   },
 ]
+
+const fullRole = ['admin', 'member', 'visitor']
+const visitor = ['visitor']
+const member = ['member']
+const admin = ['admin']
+
 export const asyncRoutes = [
   {
     path: '/',
@@ -29,6 +35,7 @@ export const asyncRoutes = [
       title: '首页',
       icon: 'home-4-line',
       affix: true,
+      roles: fullRole,
     },
     children: [
       {
@@ -39,6 +46,7 @@ export const asyncRoutes = [
           title: '首页',
           icon: 'home-4-line',
           affix: true,
+          roles: fullRole,
         },
       },
     ],
@@ -51,6 +59,7 @@ export const asyncRoutes = [
     meta: {
       title: '游客模块',
       icon: 'bubble-chart-line',
+      roles: visitor,
     },
     children: [
       {
@@ -60,6 +69,7 @@ export const asyncRoutes = [
         meta: {
           title: '自助结算',
           icon: 'exchange-cny-line',
+          roles: visitor,
         },
       },
       {
@@ -69,6 +79,7 @@ export const asyncRoutes = [
         meta: {
           title: '加入会员',
           icon: 'vip-crown-2-line',
+          roles: visitor,
         },
       },
     ],
@@ -81,6 +92,7 @@ export const asyncRoutes = [
     meta: {
       title: '会员模块',
       icon: 'vip-line',
+      roles: member,
     },
     children: [
       {
@@ -90,6 +102,7 @@ export const asyncRoutes = [
         meta: {
           title: '自助结算',
           icon: 'exchange-cny-line',
+          roles: member,
         },
       },
       {
@@ -99,6 +112,7 @@ export const asyncRoutes = [
         meta: {
           title: '充值优惠',
           icon: 'battery-charge-fill',
+          roles: member,
         },
       },
       {
@@ -108,6 +122,7 @@ export const asyncRoutes = [
         meta: {
           title: '座位预订',
           icon: 'check-fill',
+          roles: member,
         },
       },
     ],
@@ -120,6 +135,7 @@ export const asyncRoutes = [
     meta: {
       title: '订单管理',
       icon: 'list-unordered',
+      roles: admin,
     },
     children: [
       {
@@ -129,6 +145,7 @@ export const asyncRoutes = [
         meta: {
           title: '历史订单',
           icon: 'history-line',
+          roles: admin,
         },
       },
     ],
@@ -141,6 +158,7 @@ export const asyncRoutes = [
     meta: {
       title: '管理模块',
       icon: 'admin-line',
+      roles: admin,
     },
     children: [
       {
@@ -150,6 +168,7 @@ export const asyncRoutes = [
         meta: {
           title: '菜品上架',
           icon: 'add-circle-line',
+          roles: admin,
         },
       },
       {
@@ -159,6 +178,7 @@ export const asyncRoutes = [
         meta: {
           title: '用户管理',
           icon: 'user-settings-line',
+          roles: admin,
         },
       },
       {
@@ -168,6 +188,7 @@ export const asyncRoutes = [
         meta: {
           title: '库存管理',
           icon: 'database-2-line',
+          roles: admin,
         },
       },
     ],
@@ -180,6 +201,7 @@ export const asyncRoutes = [
     meta: {
       title: '组件',
       icon: 'apps-line',
+      roles: admin,
     },
     children: [
       {
@@ -189,6 +211,7 @@ export const asyncRoutes = [
         meta: {
           title: '表格',
           icon: 'table-2',
+          roles: admin,
         },
       },
       {
@@ -198,6 +221,7 @@ export const asyncRoutes = [
         meta: {
           title: '图标',
           icon: 'remixicon-line',
+          roles: admin,
         },
       },
     ],

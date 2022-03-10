@@ -65,9 +65,14 @@ module.exports = {
         target: `ws://localhost:8000`,
         ws: true,
         changeOrigin: true,
-        // pathRewrite: {
-        //   ["^/socket"]: "",
-        // },
+      },
+      '/api': {
+        target: `ws://localhost:8000`,
+        ws: false,
+        changeOrigin: true,
+        pathRewrite: {
+          ['^/api']: '',
+        },
       },
     },
     after: mockServer(),

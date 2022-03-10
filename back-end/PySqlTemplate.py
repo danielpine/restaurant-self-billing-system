@@ -2,7 +2,11 @@ import time
 import logging
 from enum import Enum
 
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 log = logging.getLogger(__name__)
+
+
 def convert_json_from_lists(keys, data):
     container = []
     if data:
@@ -12,6 +16,7 @@ def convert_json_from_lists(keys, data):
                 j[keys[k]] = v
             container.append(j)
     return container
+
 
 class Connection():
     def cursor() -> None:
@@ -74,10 +79,10 @@ class DataSource(object):
             self.__conn = sqlite3.connect(self.__db)
         elif self.__dbType == DBTypes.MySql:
             import pymysql
-            print( self.__ip,
-                 self.__user,
-                self.__password,
-               self.__db)
+            print(self.__ip,
+                  self.__user,
+                  self.__password,
+                  self.__db)
             self.__conn = pymysql.connect(
                 host=self.__ip,
                 user=self.__user,
@@ -172,18 +177,23 @@ def query_mysql():
         DataSource(
             dbType=DBTypes.MySql,
             user='root',
-            password='123456',
-            ip='192.168.142.134',
-            port=3307,
-            db='billing'))
-
+            password='root',
+            ip='127.0.0.1',
+            port=3306,
+            db='billing')
+    )
     re = PySqlTemplate.statement(
-        'SELECT * FROM BILLING'
+        'SELECT * FROM BALANCE'
     ).list_all()
-
+    Stream(re).foreach(log.info)
+    re = PySqlTemplate.statement(
+        'SELECT * FROM BALANCE'
+    ).list_all()
     Stream(re).foreach(log.info)
 
+
 query_mysql()
+
 
 def query_oracle():
     PySqlTemplate.set_data_source(
@@ -207,9 +217,7 @@ def query_sqlite3():
         DataSource(
             dbType=DBTypes.Sqlite3,
             db='test.db'))
-
     re = PySqlTemplate.statement(
         'select count(timestamp) from record where timestamp>?'
     ).params(int(time.time()-(3600*24*30))).list_all()
-
     Stream(re).foreach(log.info)

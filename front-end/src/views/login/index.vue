@@ -10,7 +10,7 @@
             <a-form-item>
               <a-input v-model:value="form.username" placeholder="Username">
                 <template v-slot:prefix>
-                  <UserOutlined style="color: rgba(0, 0, 0, 0.25)" />
+                  <UserOutlined style="color: rgba(0, 0, 0, 0.25);" />
                 </template>
               </a-input>
             </a-form-item>
@@ -21,7 +21,7 @@
                 placeholder="Password"
               >
                 <template v-slot:prefix>
-                  <LockOutlined style="color: rgba(0, 0, 0, 0.25)" />
+                  <LockOutlined style="color: rgba(0, 0, 0, 0.25);" />
                 </template>
               </a-input>
             </a-form-item>
@@ -33,6 +33,11 @@
               >
                 登录
               </a-button>
+              <div style="width: 100%; text-align: right; margin-top: 5px;">
+                <a class="visitor" html-type="submit" @click="visitorLogin">
+                  游客登录
+                </a>
+              </div>
             </a-form-item>
           </a-form>
         </div>
@@ -101,10 +106,20 @@
         await this.login(this.form)
         await this.$router.push(this.handleRoute())
       },
+      async visitorLogin() {
+        await this.login({ visitor: true })
+        await this.$router.push(this.handleRoute())
+      },
     },
   }
 </script>
 <style lang="less">
+  .visitor {
+    color: white;
+  }
+  .visitor:hover {
+    color: lightgrey;
+  }
   .login-container {
     width: 100%;
     height: 100vh;
@@ -149,7 +164,7 @@
     .ant-btn {
       width: 100%;
       height: 45px;
-      border-radius: 99px;
+      // border-radius: 99px;
     }
   }
 </style>

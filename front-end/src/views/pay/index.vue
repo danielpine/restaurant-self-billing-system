@@ -1,5 +1,6 @@
 <template>
   <div class="example">
+    {{role}}
     <a-drawer
       title="Pay"
       placement="right"
@@ -250,7 +251,7 @@
             </a-col>
             <a-col flex="auto" style="text-align: center">
               <a-button type="primary" @click="() => (modalVisible = true)">
-                模拟支付
+                现在支付
               </a-button>
             </a-col>
           </a-row>
@@ -269,9 +270,19 @@
 <script>
   import VabIcon from '@/layout/vab-icon'
   import QrcodeVue from 'qrcode.vue'
+  import { useStore } from 'vuex'
+  import { computed } from 'vue'
   export default {
     name: 'Index',
     components: { VabIcon, QrcodeVue },
+        setup() {
+      const store = useStore()
+      return {
+        avatar: computed(() => store.getters['user/avatar']),
+        username: computed(() => store.getters['user/username']),
+        role: computed(() => store.getters['acl/role'][0]),
+      }
+    },
     data() {
       return {
         step: 2, // 1 识别区为空等待放入 2 识别中  3 识别完成待支付
