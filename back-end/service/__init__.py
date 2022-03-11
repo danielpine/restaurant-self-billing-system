@@ -1,15 +1,16 @@
 import logging
 import sys
-sys.path.append("..")
 
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+from PySqlTemplate import PySqlTemplate
+sys.path.append("..")
+sys.path.append(".")
+
+fmt = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+logging.basicConfig(level=logging.INFO, format=fmt)
 log = logging.getLogger(__name__)
 
+
 class LoginService(object):
-    def __init__(self) -> None:
-        pass
 
     def findUser(self, user, passwd):
-        log.info(user, passwd)
-        pass
+        return PySqlTemplate.findOne('select * from user where username=? and passwd=?', user, passwd)

@@ -25,6 +25,7 @@ const fullRole = ['admin', 'member', 'visitor']
 const visitor = ['visitor']
 const member = ['member']
 const admin = ['admin']
+const vab = ['admin', 'member']
 
 export const asyncRoutes = [
   {
@@ -201,7 +202,7 @@ export const asyncRoutes = [
     meta: {
       title: '组件',
       icon: 'apps-line',
-      roles: admin,
+      roles: vab,
     },
     children: [
       {
@@ -211,7 +212,7 @@ export const asyncRoutes = [
         meta: {
           title: '表格',
           icon: 'table-2',
-          roles: admin,
+          roles: vab,
         },
       },
       {
@@ -221,7 +222,7 @@ export const asyncRoutes = [
         meta: {
           title: '图标',
           icon: 'remixicon-line',
-          roles: admin,
+          roles: vab,
         },
       },
     ],

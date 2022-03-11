@@ -49,6 +49,15 @@ PySqlTemplate.set_data_source(
         port=3307,
         db='billing')
 )
+PySqlTemplate.set_data_source(
+    DataSource(
+        dbType=DBTypes.MySql,
+        user='root',
+        password='root',
+        ip='127.0.0.1',
+        port=3306,
+        db='billing')
+)
 
 users = {}
 loginService = LoginService()
@@ -63,21 +72,28 @@ class LoginHandler(tornado.web.RequestHandler):
         form = json.loads(self.request.body)
         log.warn(form)
         token = generateAccessToken()
-        self.write({"code": 200, "msg": "success",
-                   "data": {"accessToken": token}})
-        loginService.findUser(form['username'], form['password'])
+        # 游客登录
         if 'visitor' in form:
             users[token] = {"roles": ["visitor"],
                             "ability": ["READ", "WRITE", "DELETE"],
                             "username": "visitor",
-                            "avatar": "https://i.gtimg.cn/club/item/face/img/8/15918_100.gif"
-                            }
-        else:
-            users[token] = {"roles": ["admin"],
+                            "avatar": "https://i.gtimg.cn/club/item/face/img/8/15918_100.gif"}
+            self.write({"code": 200, "msg": "success",
+                        "data": {"accessToken": token}})
+            return
+        # 校验用户
+        user = loginService.findUser(form['username'], form['password'])
+        if user:
+            self.write({"code": 200, "msg": "success",
+                       "data": {"accessToken": token}})
+            users[token] = {"roles": [user['role']],
                             "ability": ["READ", "WRITE", "DELETE"],
-                            "username": "admin",
-                            "avatar": "https://i.gtimg.cn/club/item/face/img/8/15918_100.gif"
-                            }
+                            "username": user['username'],
+                            'user_id': user['user_id'],
+                            "avatar": "https://i.gtimg.cn/club/item/face/img/8/15918_100.gif"}
+        else:
+            self.write({"code": 400,
+                        "msg": "username or password is incorrect!"})
 
 
 class UserInfoHandler(tornado.web.RequestHandler):
@@ -100,13 +116,9 @@ class LogoutHandler(tornado.web.RequestHandler):
 
 
 if __name__ == "__main__":
-    app = tornado.web.Application(
-        [
-            (r'/socket', ConnectHandler),
-            (r'/login', LoginHandler),
-            (r'/logout', LogoutHandler),
-            (r'/userInfo', UserInfoHandler),
-        ]
-    )
+    app = tornado.web.Application([(r'/socket', ConnectHandler),
+                                   (r'/login', LoginHandler),
+                                   (r'/logout', LogoutHandler),
+                                   (r'/userInfo', UserInfoHandler), ])
     app.listen(8000)
     tornado.ioloop.IOLoop.current().start()

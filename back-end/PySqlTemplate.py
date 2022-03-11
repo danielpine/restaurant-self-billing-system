@@ -79,10 +79,6 @@ class DataSource(object):
             self.__conn = sqlite3.connect(self.__db)
         elif self.__dbType == DBTypes.MySql:
             import pymysql
-            print(self.__ip,
-                  self.__user,
-                  self.__password,
-                  self.__db)
             self.__conn = pymysql.connect(
                 host=self.__ip,
                 user=self.__user,
@@ -111,6 +107,14 @@ class PySqlTemplate():
     def set_data_source(data_source):
         PySqlTemplate.data_source = data_source
 
+    @staticmethod
+    def findOne(statement, *params):
+        res = PySqlTemplate.statement(statement).params(*params).list_json()
+        if len(res) == 0:
+            return None
+        else:
+            return res[0]
+
     def __prepare(self):
         if PySqlTemplate.data_source.db_type() == DBTypes.Oracle:
             i = 1
@@ -128,6 +132,9 @@ class PySqlTemplate():
         self.__params = params
         self.__prepare()
         return self
+
+    def have(self):
+        return len(self.list_all()) > 0
 
     def list_all(self):
         conn = PySqlTemplate.data_source.get_conn()
@@ -190,7 +197,8 @@ def query_mysql():
         'SELECT * FROM BALANCE'
     ).list_all()
     Stream(re).foreach(log.info)
-    
+
+
 def query_mysql_vm():
     '''vm'''
     PySqlTemplate.set_data_source(
@@ -210,9 +218,6 @@ def query_mysql_vm():
         'SELECT * FROM USER'
     ).list_all()
     Stream(re).foreach(log.info)
-
-
-query_mysql_vm()
 
 
 def query_oracle():
