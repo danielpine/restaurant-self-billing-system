@@ -190,9 +190,29 @@ def query_mysql():
         'SELECT * FROM BALANCE'
     ).list_all()
     Stream(re).foreach(log.info)
+    
+def query_mysql_vm():
+    '''vm'''
+    PySqlTemplate.set_data_source(
+        DataSource(
+            dbType=DBTypes.MySql,
+            user='root',
+            password='123456',
+            ip='192.168.142.134',
+            port=3307,
+            db='billing')
+    )
+    re = PySqlTemplate.statement(
+        'SELECT * FROM BALANCE'
+    ).list_all()
+    Stream(re).foreach(log.info)
+    re = PySqlTemplate.statement(
+        'SELECT * FROM USER'
+    ).list_all()
+    Stream(re).foreach(log.info)
 
 
-query_mysql()
+query_mysql_vm()
 
 
 def query_oracle():
