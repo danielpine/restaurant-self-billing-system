@@ -1,13 +1,15 @@
-from pickletools import uint4
-from posixpath import split
-import uuid
 import json
 import logging
+import traceback
+import uuid
+
 import tornado.ioloop
 import tornado.web
 import tornado.websocket
+
+from PySqlTemplate import DataSource, DBTypes, PySqlTemplate
 from ShapeDetector import detect
-import traceback
+from service import (LoginService)
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -38,7 +40,18 @@ class ConnectHandler(tornado.websocket.WebSocketHandler):
             traceback.print_exc()
 
 
+PySqlTemplate.set_data_source(
+    DataSource(
+        dbType=DBTypes.MySql,
+        user='root',
+        password='123456',
+        ip='192.168.142.134',
+        port=3307,
+        db='billing')
+)
+
 users = {}
+loginService = LoginService()
 
 
 def generateAccessToken():
@@ -52,6 +65,7 @@ class LoginHandler(tornado.web.RequestHandler):
         token = generateAccessToken()
         self.write({"code": 200, "msg": "success",
                    "data": {"accessToken": token}})
+        loginService.findUser(form['username'], form['password'])
         if 'visitor' in form:
             users[token] = {"roles": ["visitor"],
                             "ability": ["READ", "WRITE", "DELETE"],
