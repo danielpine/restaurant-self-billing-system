@@ -1,7 +1,10 @@
+import sys
 import time
 import logging
 from enum import Enum
-
+import traceback
+sys.path.append("..")
+sys.path.append(".")
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 log = logging.getLogger(__name__)
@@ -115,6 +118,14 @@ class PySqlTemplate():
         else:
             return res[0]
 
+    @staticmethod
+    def count(statement, *params):
+        return PySqlTemplate.statement(statement).params(*params).__count()
+
+    @staticmethod
+    def save(statement, *params):
+        PySqlTemplate.statement(statement).params(*params).execute()
+
     def __prepare(self):
         if PySqlTemplate.data_source.db_type() == DBTypes.Oracle:
             i = 1
@@ -127,6 +138,7 @@ class PySqlTemplate():
                 *map(lambda k: ':' + str(k), params_map.keys())).upper()
         elif PySqlTemplate.data_source.db_type() == DBTypes.MySql:
             self.__statement = self.__statement.replace('?', '%s')
+            self.__params = [str(x)for x in self.__params]
 
     def params(self, *params):
         self.__params = params
@@ -135,6 +147,25 @@ class PySqlTemplate():
 
     def have(self):
         return len(self.list_all()) > 0
+
+    def execute(self):
+        conn = PySqlTemplate.data_source.get_conn()
+        cur = conn.cursor()
+        log.warn('_params: %s', self.__params)
+        log.warn('__statement: %s', self.__statement)
+        result = True
+        try:
+            cur.execute(self.__statement, self.__params)  # 执行sql语句
+            conn.commit()
+        except:
+            traceback.print_exc()
+            conn.rollback()
+            result = False
+        cur.close()
+        PySqlTemplate.data_source.close_conn()
+        if not result:
+            raise Exception('数据库操作失败')
+        return result
 
     def list_all(self):
         conn = PySqlTemplate.data_source.get_conn()
@@ -177,6 +208,19 @@ class PySqlTemplate():
         PySqlTemplate.data_source.close_conn()
         dt = [list(e) if len(cols) > 1 else e[0] for e in res]
         return convert_json_from_lists(cols, dt)
+
+    def __count(self):
+        conn = PySqlTemplate.data_source.get_conn()
+        cur = conn.cursor()
+        log.warn('_params: %s', self.__params)
+        log.warn('__statement: %s', self.__statement)
+        cur.execute(self.__statement, self.__params if self.__params else {})
+        cols = [item[0] for item in cur.description]
+        log.warn(','.join(cols))
+        res = cur.fetchall()
+        cur.close()
+        PySqlTemplate.data_source.close_conn()
+        return res[0][0]
 
 
 def query_mysql():

@@ -1,7 +1,7 @@
 import sys
 sys.path.append("..")
 sys.path.append(".")
-from PySqlTemplate import DBTypes, DataSource, PySqlTemplate
+from tools.PySqlTemplate import DBTypes, DataSource, PySqlTemplate
 
 PySqlTemplate.set_data_source(
     DataSource(

@@ -28,6 +28,51 @@ export function getUserInfo(accessToken) {
   })
 }
 
+export function getUserBalance(accessToken) {
+  //此处为了兼容mock.js使用data传递accessToken，如果使用mock可以走headers
+  return request({
+    url: '/balance',
+    method: 'post',
+    data: {
+      [tokenName]: accessToken,
+    },
+  })
+}
+export function getUserDiscount(accessToken) {
+  //此处为了兼容mock.js使用data传递accessToken，如果使用mock可以走headers
+  return request({
+    url: '/discount',
+    method: 'post',
+    data: {
+      [tokenName]: accessToken,
+    },
+  })
+}
+
+export function charge(accessToken, detail) {
+  //此处为了兼容mock.js使用data传递accessToken，如果使用mock可以走headers
+  return request({
+    url: '/charge',
+    method: 'post',
+    data: {
+      [tokenName]: accessToken,
+      detail: detail,
+    },
+  })
+}
+export function paymentRequest(accessToken, order, mode) {
+  //此处为了兼容mock.js使用data传递accessToken，如果使用mock可以走headers
+  return request({
+    url: '/pay',
+    method: 'post',
+    data: {
+      [tokenName]: accessToken,
+      order: order,
+      mode: mode,
+    },
+  })
+}
+
 export function logout() {
   return request({
     url: '/logout',

@@ -1,6 +1,5 @@
 <template>
   <div class="example">
-    {{ role }}
     <a-drawer
       title="Pay"
       placement="right"
@@ -32,28 +31,108 @@
             <a-divider dashed></a-divider>
             <a-row>
               <a-col :span="12" style="text-align: left;">
-                <h3>合计</h3>
+                应付：
               </a-col>
               <a-col :span="6"></a-col>
               <a-col :span="6" style="text-align: right;">
-                <h3>{{ '¥' + currOrder.sum }}</h3>
+                {{ '¥' + currOrder.sum }}
+              </a-col>
+            </a-row>
+            <a-row>
+              <a-col :span="12" style="text-align: left;">
+                折扣：
+              </a-col>
+              <a-col :span="6"></a-col>
+              <a-col :span="6" style="text-align: right;">
+                <span v-if="role == 'visitor' || discount <= 5">无</span>
+                <span
+                  v-if="role != 'visitor' && discount > 5 && discount <= 10"
+                >
+                  9.5折
+                </span>
+                <span v-if="role != 'visitor' && discount > 10">
+                  9折
+                </span>
+              </a-col>
+            </a-row>
+            <a-row>
+              <a-col :span="12" style="text-align: left;">
+                优惠：
+              </a-col>
+              <a-col :span="6"></a-col>
+              <a-col :span="6" style="text-align: right;">
+                {{ '¥' + (currOrder.sum - currOrder.pay) }}
+              </a-col>
+            </a-row>
+            <a-row>
+              <a-col :span="12" style="text-align: left;">
+                实付：
+              </a-col>
+              <a-col :span="6"></a-col>
+              <a-col :span="6" style="text-align: right;">
+                {{ '¥' + currOrder.pay }}
               </a-col>
             </a-row>
           </div>
           <a-divider></a-divider>
         </a-row>
-        <div v-if="noTitleKey === '余额支付'"></div>
+        <div
+          v-if="noTitleKey === '余额支付' && role == 'member'"
+          style="margin: 0 auto;"
+        >
+          <div style="width: 250px; margin: 0 auto;">
+            <a-row class="charge">
+              <a-col :span="12" style="text-align: left;">
+                <vab-icon :icon="'money-cny-circle-line'"></vab-icon>
+                当前余额：
+              </a-col>
+              <a-col :span="12" style="text-align: right;">
+                <span style="font-size: 30px; color: #1890ff;">
+                  {{ balance }}
+                </span>
+                元
+              </a-col>
+            </a-row>
+          </div>
+          <div style="width: 250px; margin: 0 auto;">
+            <a-row class="charge" v-if="balance >= currOrder.sum">
+              <a-col :span="12" style="text-align: left;">
+                <vab-icon :icon="'money-cny-circle-line'"></vab-icon>
+                本次扣款：
+              </a-col>
+              <a-col :span="12" style="text-align: right;">
+                <span style="font-size: 30px; color: #1890ff;">
+                  {{ currOrder.pay }}
+                </span>
+                元
+              </a-col>
+            </a-row>
+            <a-row v-else style="color: orange;">
+              <vab-icon :icon="'alert-line'"></vab-icon>
+              &nbsp;余额不足请充值或扫描付款！
+            </a-row>
+          </div>
+          <br />
+        </div>
+        <div
+          v-else-if="noTitleKey === '余额支付' && role == 'visitor'"
+          style="margin: 0 auto;"
+        >
+          <div style="width: 250px; margin: 0 auto;">
+            <a-row style="color: orange;">
+              <vab-icon :icon="'alert-line'"></vab-icon>
+              &nbsp;游客请用扫码支付，或加入会员！
+            </a-row>
+          </div>
+          <br />
+        </div>
         <div v-else-if="noTitleKey === '扫码支付'" style="margin: 0 auto;">
           <div>
             <qrcode-vue :value="qrCodeUrl" :size="250" level="H" />
           </div>
           <div>
             <p>支付宝或微信扫一扫支付</p>
-            <a-button
-              style="margin: 0 auto;"
-              type="primary"
-              @click="() => (modalVisible = false)"
-            >
+            <a-button style="margin: 0 auto;" type="primary" @click="pay('qr')">
               <vab-icon :icon="'check-fill'"></vab-icon>
               模拟扫码
             </a-button>
@@ -63,7 +142,8 @@
           <a-button
             style="margin: 0 auto;"
             type="primary"
-            @click="() => (modalVisible = false)"
+            :disabled="balance < currOrder.sum"
+            @click="pay('balance')"
           >
             <vab-icon :icon="'check-fill'"></vab-icon>
             立即支付
@@ -168,7 +248,7 @@
     <a-spin
       class="content"
       :spinning="!imgShow"
-      size="large"
+      size="small"
       tip="拼命加载中..."
     />
     <a-row type="flex" v-show="imgShow || step == 1">
@@ -208,9 +288,14 @@
           style="width: 450px; margin-left: 50px; background: white;"
           :style="{ height: height + 'px' }"
         >
-          <div :style="{ height: height - 150 + 'px' }">
-            <span v-if="step == 1" class="vertical">请放入菜品...</span>
-            <span v-if="step == 2" class="vertical">
+          <div :style="{ height: height - 150 + 'px' }" class="parent">
+            <span v-if="step == 1" class="child">
+              <a-alert message="请放入菜品..." banner />
+            </span>
+            <span v-if="step == 4" class="child">
+              <a-alert message="请移走餐盘..." banner />
+            </span>
+            <span v-if="step == 2" class="child">
               <a-spin :spinning="step == 2" size="large" tip="正在识别..." />
             </span>
             <div v-if="step == 3" class="dotted">
@@ -250,7 +335,7 @@
               <a-button type="primary" @click="reDetect">重新识别</a-button>
             </a-col>
             <a-col flex="auto" style="text-align: center;">
-              <a-button type="primary" @click="() => (modalVisible = true)">
+              <a-button type="primary" @click="payNow">
                 现在支付
               </a-button>
             </a-col>
@@ -272,6 +357,10 @@
   import QrcodeVue from 'qrcode.vue'
   import { useStore } from 'vuex'
   import { computed } from 'vue'
+  import { getUserBalance, paymentRequest, getUserDiscount } from '@/api/user'
+  import { getAccessToken } from '@/utils/accessToken'
+  import { message } from 'ant-design-vue'
+
   export default {
     name: 'Index',
     components: { VabIcon, QrcodeVue },
@@ -285,7 +374,7 @@
     },
     data() {
       return {
-        step: 2, // 1 识别区为空等待放入 2 识别中  3 识别完成待支付
+        step: 2, // 1 识别区为空等待放入 2 识别中  3 识别完成待支付 4 刚支付完，等待移走餐盘
         config: {
           threshold1: 74,
           threshold2: 74,
@@ -321,10 +410,13 @@
         imgShow: false,
         visible: false,
         modalVisible: false,
+        justPay: false,
         fps: 200,
         currOrder: null,
         plates: [],
         accumulator: 0,
+        balance: null,
+        discount: null,
       }
     },
     created() {
@@ -338,6 +430,45 @@
       this.closeMedia()
     },
     methods: {
+      payNow() {
+        if (this.role == 'member') {
+          this.getUserBalance()
+          this.getUserDiscount()
+        } else if (this.role == 'visitor') {
+          this.discount = 0
+          this.currOrder.discount = 1
+          this.currOrder.pay = this.currOrder.sum
+        }
+        this.modalVisible = true
+      },
+      pay(mode) {
+        this.paymentRequest(this.currOrder, mode)
+      },
+      async paymentRequest(order, mode) {
+        await paymentRequest(getAccessToken(), order, mode)
+        message.info('支付成功,请移走餐盘！')
+        this.modalVisible = false
+        this.justPay = true
+        this.createTimer()
+      },
+      async getUserBalance() {
+        let { data } = await getUserBalance(getAccessToken())
+        this.balance = data
+      },
+      async getUserDiscount() {
+        let { data } = await getUserDiscount(getAccessToken())
+        this.discount = data
+        if (this.discount <= 5) {
+          this.currOrder['discount'] = 1
+        } else if (this.discount > 5 && this.discount <= 10) {
+          this.currOrder['discount'] = 0.95
+        } else if (this.discount > 10) {
+          this.currOrder['discount'] = 0.9
+        }
+        this.currOrder['pay'] = parseFloat(
+          (this.currOrder.sum * this.currOrder.discount).toFixed(2)
+        )
+      },
       onTabChange(key, type) {
         this[type] = key
       },
@@ -451,8 +582,22 @@
           this.step = 1
           this.plates = []
           this.accumulator = 0
+          this.justPay = false
         } else {
           this.step = 2
+        }
+
+        if (this.justPay) {
+          console.log('justPay')
+          if (JSON.stringify(this.plates) == JSON.stringify(data.plates)) {
+            this.accumulator = 0
+            this.step = 4
+            this.imgSrc = this_.prefix + data.image
+          } else {
+            this.justPay = false
+            this.step = 2
+            this.plates = []
+          }
         }
 
         if (this.visible) {
@@ -677,5 +822,16 @@
         cursor: pointer;
       }
     }
+  }
+  .parent {
+    position: relative;
+  }
+  .child {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    height: 30%;
+    width: 50%;
+    margin: -15% 0 0 -25%;
   }
 </style>

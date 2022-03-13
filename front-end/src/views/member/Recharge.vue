@@ -30,7 +30,7 @@
             style="text-align: right; padding-right: 10px;"
           >
             <vab-icon :icon="'money-cny-circle-line'"></vab-icon>
-            当前余额： 1000
+            当前余额： {{ blance }}
           </a-col>
         </a-row>
         <br />
@@ -93,18 +93,26 @@
             </a-radio-group>
           </a-col>
         </a-row>
-        <br />
         <a-row class="charge">
           <a-col :span="4" style="padding-left: 10px;">
             <vab-icon :icon="'money-cny-circle-line'"></vab-icon>
             支付金额：
           </a-col>
           <a-col :span="6" style="padding-left: 10px;">
-            <span style="font-size: 30px; color: blue;">{{ pay }}</span>
+            <span style="font-size: 30px; color: #1890ff;">{{ pay }}</span>
             元
           </a-col>
         </a-row>
-        <br />
+        <a-row class="charge">
+          <a-col :span="4" style="padding-left: 10px;">
+            <vab-icon :icon="'money-cny-circle-line'"></vab-icon>
+            到账金额：
+          </a-col>
+          <a-col :span="6" style="padding-left: 10px;">
+            <span style="font-size: 30px; color: orange;">{{ amount }}</span>
+            元
+          </a-col>
+        </a-row>
         <a-row class="pay">
           <a-col :span="4" style="padding-left: 10px;">
             <vab-icon :icon="'bank-card-line'"></vab-icon>
@@ -127,8 +135,8 @@
         </a-row>
         <br />
         <br />
-        <a-row>
-          <a-button type="primary" style="margin: 0 auto;">
+        <a-row class="charge">
+          <a-button type="primary" style="margin: 0 auto;" @click="charge">
             立即充值
           </a-button>
         </a-row>
@@ -141,6 +149,8 @@
 
 <script>
   import VabIcon from '@/layout/vab-icon'
+  import { getUserBalance, charge } from '@/api/user'
+  import { getAccessToken } from '@/utils/accessToken'
   import { useStore } from 'vuex'
   import { computed } from 'vue'
   export default {
@@ -188,9 +198,24 @@
         },
         amount: 1500,
         pay: 1000,
+        blance: null,
       }
     },
+    mounted() {
+      this.loadBalance()
+    },
     methods: {
+      async loadBalance() {
+        let { data } = await getUserBalance(getAccessToken())
+        this.blance = data
+      },
+      async charge() {
+        let { data } = await charge(getAccessToken(), {
+          amount: this.amount,
+          pay: this.pay,
+        })
+        this.blance = data
+      },
       onChange: function (e) {
         this.amount = e.target.value
         this.pay = this.charges[this.amount].pay
@@ -221,7 +246,7 @@
     background: url('~@/assets/charge_checked.jpg') no-repeat;
     background-size: 100% 100%;
   }
-  .ant-btn {
+  .charge .ant-btn {
     width: 200px;
     height: 45px;
     border-radius: 99px;

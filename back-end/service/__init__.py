@@ -1,7 +1,7 @@
 import logging
 import sys
 
-from PySqlTemplate import PySqlTemplate
+from tools.PySqlTemplate import PySqlTemplate
 sys.path.append("..")
 sys.path.append(".")
 
