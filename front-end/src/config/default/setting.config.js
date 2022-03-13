@@ -43,9 +43,9 @@ const setting = {
   //token在localStorage、sessionStorage、cookie存储的key的名称
   tokenTableName: 'accessToken',
   //token存储位置localStorage sessionStorage cookie
-  storage: 'localStorage',
+  storage: 'localStorage', 
   //token失效回退到登录页时是否记录本次的路由
-  recordRoute: true,
+  recordRoute: false,
   //是否显示logo，不显示时设置false，显示时请填写remixIcon图标名称，暂时只支持设置remixIcon
   logo: 'money-cny-box-line',
   //语言类型zh、en

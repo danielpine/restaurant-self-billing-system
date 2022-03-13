@@ -5,6 +5,7 @@
 import router from '@/router'
 import store from '@/store'
 import getPageTitle from '@/utils/pageTitle'
+import { hasRole } from '@/utils/hasRole'
 import {
   authentication,
   loginInterception,
@@ -26,7 +27,14 @@ router.beforeEach(async (to, from, next) => {
         store.getters['acl/role'].length > 0 ||
         store.getters['acl/ability'].length > 0
       if (hasRoles) {
-        next()
+        if (to.meta && to.meta.roles && hasRole(to.meta.roles)) {
+          next()
+        } else {
+          next({
+            path: '/403',
+            replace: true,
+          })
+        }
       } else {
         try {
           if (loginInterception) {

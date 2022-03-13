@@ -38,6 +38,49 @@ export function getUserBalance(accessToken) {
     },
   })
 }
+export function getbooking(accessToken) {
+  //此处为了兼容mock.js使用data传递accessToken，如果使用mock可以走headers
+  return request({
+    url: '/getbooking',
+    method: 'post',
+    data: {
+      [tokenName]: accessToken,
+    },
+  })
+}
+export function usebooking(accessToken, book) {
+  //此处为了兼容mock.js使用data传递accessToken，如果使用mock可以走headers
+  return request({
+    url: '/usebooking',
+    method: 'post',
+    data: {
+      [tokenName]: accessToken,
+      book: book,
+    },
+  })
+}
+export function unbooking(accessToken, book) {
+  //此处为了兼容mock.js使用data传递accessToken，如果使用mock可以走headers
+  return request({
+    url: '/unbooking',
+    method: 'post',
+    data: {
+      [tokenName]: accessToken,
+      book: book,
+    },
+  })
+}
+export function booking(accessToken, book) {
+  //此处为了兼容mock.js使用data传递accessToken，如果使用mock可以走headers
+  return request({
+    url: '/booking',
+    method: 'post',
+    data: {
+      [tokenName]: accessToken,
+      book: book,
+    },
+  })
+}
 export function getUserDiscount(accessToken) {
   //此处为了兼容mock.js使用data传递accessToken，如果使用mock可以走headers
   return request({

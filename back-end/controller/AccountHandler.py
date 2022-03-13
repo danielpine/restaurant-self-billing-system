@@ -42,6 +42,89 @@ class AccountHandler(tornado.web.RequestHandler):
                         "msg": "Token timed out,please login!"})
 
 
+@route(r'/booking')
+class BookingHandler(tornado.web.RequestHandler):
+    def post(self):
+        form = json.loads(self.request.body)
+        log.info(form)
+        token = form['accessToken']
+        user = getUserInfoByToken(token)
+        log.info(user)
+        if user:
+            booked = PySqlTemplate.findOne(
+                'select * from booking where user_id=? and status=?', user['user_id'], 1)
+            if booked:
+                self.write({"code": 400, "msg":   '您已预订：' + str(booked['book_date']) +
+                           ' ' + booked['book_time']+',请勿重复预订！'})
+            else:
+                book = form['book']
+                PySqlTemplate.save(
+                    'INSERT INTO booking(user_id, book_date, book_time, status) VALUES (?,?,?,?)', user['user_id'], book['date'], book['time'], 1)
+                self.write({"code": 200, "msg": "success",
+                            "data": '预订成功：'+book['date'] + ' ' + book['time']})
+        else:
+            self.write({"code": 400,
+                        "msg": "Token timed out,please login!"})
+
+
+@route(r'/usebooking')
+class UseBookingHandler(tornado.web.RequestHandler):
+    def post(self):
+        form = json.loads(self.request.body)
+        log.info(form)
+        token = form['accessToken']
+        user = getUserInfoByToken(token)
+        log.info(user)
+        if user:
+            book = form['book']
+            PySqlTemplate.save(
+                'update booking  set status=? where id=? ', 2, book['id'])
+            self.write({"code": 200, "msg": "success",
+                        "data": '核销预订成功：'+str(book['book_date']) + ' ' + book['book_time']})
+        else:
+            self.write({"code": 400,
+                        "msg": "Token timed out,please login!"})
+
+
+@route(r'/unbooking')
+class UnBookingHandler(tornado.web.RequestHandler):
+    def post(self):
+        form = json.loads(self.request.body)
+        log.info(form)
+        token = form['accessToken']
+        user = getUserInfoByToken(token)
+        log.info(user)
+        if user:
+            book = form['book']
+            PySqlTemplate.save(
+                'update booking  set status=? where id=? ', 0, book['id'])
+            self.write({"code": 200, "msg": "success",
+                        "data": '取消预订成功：'+str(book['book_date']) + ' ' + book['book_time']})
+        else:
+            self.write({"code": 400,
+                        "msg": "Token timed out,please login!"})
+
+
+@route(r'/getbooking')
+class GetBookingHandler(tornado.web.RequestHandler):
+    def post(self):
+        form = json.loads(self.request.body)
+        log.info(form)
+        token = form['accessToken']
+        user = getUserInfoByToken(token)
+        log.info(user)
+        if user:
+            booked = PySqlTemplate.findOne(
+                'select id,book_date,book_time from booking where user_id=? and status=?', user['user_id'], 1)
+            if booked:
+                booked['book_date'] = str(booked['book_date'])
+                self.write({"code": 200,  'data': booked})
+            else:
+                self.write({"code": 200,  'data': None})
+        else:
+            self.write({"code": 400, "msg": "Token timed out,please login!"})
+
+
 @route(r'/discount')
 class DiscountHandler(tornado.web.RequestHandler):
     def post(self):
