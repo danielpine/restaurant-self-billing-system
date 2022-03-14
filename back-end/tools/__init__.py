@@ -11,24 +11,26 @@ def generateAccessToken():
 
 
 def setupDataSource(profile):
-    PySqlTemplate.set_data_source(
-        DataSource(
-            dbType=DBTypes.MySql,
-            user='root',
-            password='123456',
-            ip='192.168.142.134',
-            port=3307,
-            db='billing')
-    )
-    PySqlTemplate.set_data_source(
-        DataSource(
-            dbType=DBTypes.MySql,
-            user='root',
-            password='root',
-            ip='127.0.0.1',
-            port=3306,
-            db='billing')
-    )
+    if profile == 'vm':
+        PySqlTemplate.set_data_source(
+            DataSource(
+                dbType=DBTypes.MySql,
+                user='root',
+                password='123456',
+                ip='192.168.142.134',
+                port=3307,
+                db='billing')
+        )
+    elif profile == 'dev':
+        PySqlTemplate.set_data_source(
+            DataSource(
+                dbType=DBTypes.MySql,
+                user='root',
+                password='root',
+                ip='127.0.0.1',
+                port=3306,
+                db='billing')
+        )
 
 
 def routeScan(folder):

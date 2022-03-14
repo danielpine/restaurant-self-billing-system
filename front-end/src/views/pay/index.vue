@@ -12,64 +12,54 @@
       v-if="currOrder && currOrder.sum"
     >
       <a-card
-        style="width: 100%; height: 70%; text-align: center;"
+        style="width: 100%; height: 70%; text-align: center"
         :tab-list="tabListNoTitle"
         :active-tab-key="noTitleKey"
         @tabChange="(key) => onTabChange(key, 'noTitleKey')"
       >
         <a-row>
-          <div style="width: 250px; margin: 0 auto;">
+          <div style="width: 250px; margin: 0 auto">
             <a-row v-for="(v, i) in currOrder.items" :key="i">
-              <a-col :span="12" style="text-align: left;">
+              <a-col :span="12" style="text-align: left">
                 <span>{{ v.type }}</span>
               </a-col>
               <a-col :span="6"></a-col>
-              <a-col :span="6" style="text-align: right;">
+              <a-col :span="6" style="text-align: right">
                 <span>{{ v.unit + 'x' + v.count }}</span>
               </a-col>
             </a-row>
             <a-divider dashed></a-divider>
             <a-row>
-              <a-col :span="12" style="text-align: left;">
-                应付：
-              </a-col>
+              <a-col :span="12" style="text-align: left">应付：</a-col>
               <a-col :span="6"></a-col>
-              <a-col :span="6" style="text-align: right;">
+              <a-col :span="6" style="text-align: right">
                 {{ '¥' + currOrder.sum }}
               </a-col>
             </a-row>
             <a-row>
-              <a-col :span="12" style="text-align: left;">
-                折扣：
-              </a-col>
+              <a-col :span="12" style="text-align: left">折扣：</a-col>
               <a-col :span="6"></a-col>
-              <a-col :span="6" style="text-align: right;">
+              <a-col :span="6" style="text-align: right">
                 <span v-if="role == 'visitor' || discount <= 5">无</span>
                 <span
                   v-if="role != 'visitor' && discount > 5 && discount <= 10"
                 >
                   9.5折
                 </span>
-                <span v-if="role != 'visitor' && discount > 10">
-                  9折
-                </span>
+                <span v-if="role != 'visitor' && discount > 10">9折</span>
               </a-col>
             </a-row>
             <a-row>
-              <a-col :span="12" style="text-align: left;">
-                优惠：
-              </a-col>
+              <a-col :span="12" style="text-align: left">优惠：</a-col>
               <a-col :span="6"></a-col>
-              <a-col :span="6" style="text-align: right;">
+              <a-col :span="6" style="text-align: right">
                 {{ '¥' + (currOrder.sum - currOrder.pay) }}
               </a-col>
             </a-row>
             <a-row>
-              <a-col :span="12" style="text-align: left;">
-                实付：
-              </a-col>
+              <a-col :span="12" style="text-align: left">实付：</a-col>
               <a-col :span="6"></a-col>
-              <a-col :span="6" style="text-align: right;">
+              <a-col :span="6" style="text-align: right">
                 {{ '¥' + currOrder.pay }}
               </a-col>
             </a-row>
@@ -78,36 +68,36 @@
         </a-row>
         <div
           v-if="noTitleKey === '余额支付' && role == 'member'"
-          style="margin: 0 auto;"
+          style="margin: 0 auto"
         >
-          <div style="width: 250px; margin: 0 auto;">
+          <div style="width: 250px; margin: 0 auto">
             <a-row class="charge">
-              <a-col :span="12" style="text-align: left;">
+              <a-col :span="12" style="text-align: left">
                 <vab-icon :icon="'money-cny-circle-line'"></vab-icon>
                 当前余额：
               </a-col>
-              <a-col :span="12" style="text-align: right;">
-                <span style="font-size: 30px; color: #1890ff;">
+              <a-col :span="12" style="text-align: right">
+                <span style="font-size: 30px; color: #1890ff">
                   {{ balance }}
                 </span>
                 元
               </a-col>
             </a-row>
           </div>
-          <div style="width: 250px; margin: 0 auto;">
+          <div style="width: 250px; margin: 0 auto">
             <a-row class="charge" v-if="balance >= currOrder.sum">
-              <a-col :span="12" style="text-align: left;">
+              <a-col :span="12" style="text-align: left">
                 <vab-icon :icon="'money-cny-circle-line'"></vab-icon>
                 本次扣款：
               </a-col>
-              <a-col :span="12" style="text-align: right;">
-                <span style="font-size: 30px; color: #1890ff;">
+              <a-col :span="12" style="text-align: right">
+                <span style="font-size: 30px; color: #1890ff">
                   {{ currOrder.pay }}
                 </span>
                 元
               </a-col>
             </a-row>
-            <a-row v-else style="color: orange;">
+            <a-row v-else style="color: orange">
               <vab-icon :icon="'alert-line'"></vab-icon>
               &nbsp;余额不足请充值或扫描付款！
             </a-row>
@@ -116,23 +106,23 @@
         </div>
         <div
           v-else-if="noTitleKey === '余额支付' && role == 'visitor'"
-          style="margin: 0 auto;"
+          style="margin: 0 auto"
         >
-          <div style="width: 250px; margin: 0 auto;">
-            <a-row style="color: orange;">
+          <div style="width: 250px; margin: 0 auto">
+            <a-row style="color: orange">
               <vab-icon :icon="'alert-line'"></vab-icon>
               &nbsp;游客请用扫码支付，或加入会员！
             </a-row>
           </div>
           <br />
         </div>
-        <div v-else-if="noTitleKey === '扫码支付'" style="margin: 0 auto;">
+        <div v-else-if="noTitleKey === '扫码支付'" style="margin: 0 auto">
           <div>
             <qrcode-vue :value="qrCodeUrl" :size="250" level="H" />
           </div>
           <div>
             <p>支付宝或微信扫一扫支付</p>
-            <a-button style="margin: 0 auto;" type="primary" @click="pay('qr')">
+            <a-button style="margin: 0 auto" type="primary" @click="pay('qr')">
               <vab-icon :icon="'check-fill'"></vab-icon>
               模拟扫码
             </a-button>
@@ -140,7 +130,7 @@
         </div>
         <a-row v-if="noTitleKey === '余额支付'">
           <a-button
-            style="margin: 0 auto;"
+            style="margin: 0 auto"
             type="primary"
             :disabled="balance < currOrder.sum"
             @click="pay('balance')"
@@ -209,7 +199,7 @@
           />
         </a-col>
       </a-row>
-      <a-row style="margin-top: 10px;">
+      <a-row style="margin-top: 10px">
         <a-col :span="5">KernelSize</a-col>
         <a-col :span="19">
           <a-input-number
@@ -220,7 +210,7 @@
           />
         </a-col>
       </a-row>
-      <a-row style="margin-top: 10px;">
+      <a-row style="margin-top: 10px">
         <a-col :span="5">GaussianSize</a-col>
         <a-col :span="19">
           <a-input-number
@@ -232,7 +222,7 @@
           />
         </a-col>
       </a-row>
-      <a-row style="margin-top: 10px;">
+      <a-row style="margin-top: 10px">
         <a-col :span="5">DetectCount</a-col>
         <a-col :span="19">
           <a-input-number
@@ -272,7 +262,7 @@
           ></video>
         </div>
       </a-col>
-      <a-col flex="auto" style="text-align: center;">
+      <a-col flex="auto" style="text-align: center">
         <a-button
           type="dashed"
           shape="circle"
@@ -285,7 +275,7 @@
           title="合并订单"
           :headStyle="{ background: 'aliceblue' }"
           :bordered="true"
-          style="width: 450px; margin-left: 50px; background: white;"
+          style="width: 450px; margin-left: 50px; background: white"
           :style="{ height: height + 'px' }"
         >
           <div :style="{ height: height - 150 + 'px' }" class="parent">
@@ -299,30 +289,30 @@
               <a-spin :spinning="step == 2" size="large" tip="正在识别..." />
             </span>
             <div v-if="step == 3" class="dotted">
-              <a-divider dashed style="height: 3px;"></a-divider>
-              <div class="vertical" style="width: 250px; margin: 0 auto;">
+              <a-divider dashed style="height: 3px"></a-divider>
+              <div class="vertical" style="width: 250px; margin: 0 auto">
                 <a-row v-for="(v, i) in currOrder.items" :key="i">
-                  <a-col :span="12" style="text-align: left;">
+                  <a-col :span="12" style="text-align: left">
                     <h3>{{ v.type }}</h3>
                   </a-col>
                   <a-col :span="1"></a-col>
-                  <a-col :span="5" style="text-align: left;">
+                  <a-col :span="5" style="text-align: left">
                     <h3>{{ v.unit }}</h3>
                   </a-col>
-                  <a-col :span="6" style="text-align: left;">
+                  <a-col :span="6" style="text-align: left">
                     <h3>{{ 'x' + v.count }}</h3>
                   </a-col>
                 </a-row>
                 <a-divider dashed></a-divider>
                 <a-row>
-                  <a-col :span="12" style="text-align: left;">
+                  <a-col :span="12" style="text-align: left">
                     <h3>合计:</h3>
                   </a-col>
                   <a-col :span="1"></a-col>
-                  <a-col :span="5" style="text-align: left;">
+                  <a-col :span="5" style="text-align: left">
                     <h3>{{ '¥' + currOrder.sum }}</h3>
                   </a-col>
-                  <a-col :span="6" style="text-align: left;">
+                  <a-col :span="6" style="text-align: left">
                     <h3>{{ currOrder.volume + '(份)' }}</h3>
                   </a-col>
                 </a-row>
@@ -331,13 +321,11 @@
             <div v-if="step == 3" class="dotted-bottom"></div>
           </div>
           <a-row type="flex" v-if="step == 3">
-            <a-col flex="auto" style="text-align: center;">
+            <a-col flex="auto" style="text-align: center">
               <a-button type="primary" @click="reDetect">重新识别</a-button>
             </a-col>
-            <a-col flex="auto" style="text-align: center;">
-              <a-button type="primary" @click="payNow">
-                现在支付
-              </a-button>
+            <a-col flex="auto" style="text-align: center">
+              <a-button type="primary" @click="payNow">现在支付</a-button>
             </a-col>
           </a-row>
         </a-card>
@@ -345,7 +333,7 @@
     </a-row>
     <canvas
       id="canvas"
-      style="display: none;"
+      style="display: none"
       :width="width"
       :height="height"
     ></canvas>
@@ -823,9 +811,7 @@
       }
     }
   }
-  .parent {
-    position: relative;
-  }
+
   .child {
     position: absolute;
     top: 50%;

@@ -19,7 +19,6 @@
 <script>
   import { recordRoute } from '@/config'
   import { DownOutlined } from '@ant-design/icons-vue'
-
   import { useStore } from 'vuex'
   import { computed } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
@@ -29,11 +28,12 @@
     components: { DownOutlined },
     setup() {
       const store = useStore()
-      const router = useRouter();
-      const route = useRoute();
-      
+      const router = useRouter()
+      const route = useRoute()
+
       const logout = async () => {
         await store.dispatch('user/logout')
+        await store.dispatch('tagsBar/delAllVisitedRoutes')
         if (recordRoute) {
           const fullPath = route.fullPath
           router.push(`/login?redirect=${fullPath}`)
@@ -43,7 +43,8 @@
       }
 
       const clear = () => {
-        window.alert("清理成功")
+        window.localStorage.clear()
+        window.alert('清理成功')
       }
 
       return {

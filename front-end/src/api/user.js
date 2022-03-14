@@ -70,6 +70,24 @@ export function unbooking(accessToken, book) {
     },
   })
 }
+export function hasUser(username) {
+  //此处为了兼容mock.js使用data传递accessToken，如果使用mock可以走headers
+  return request({
+    url: '/hasUser',
+    method: 'post',
+    data: {
+      username: username,
+    },
+  })
+}
+export function register(data) {
+  //此处为了兼容mock.js使用data传递accessToken，如果使用mock可以走headers
+  return request({
+    url: '/register',
+    method: 'post',
+    data: data,
+  })
+}
 export function booking(accessToken, book) {
   //此处为了兼容mock.js使用data传递accessToken，如果使用mock可以走headers
   return request({
@@ -119,13 +137,6 @@ export function paymentRequest(accessToken, order, mode) {
 export function logout() {
   return request({
     url: '/logout',
-    method: 'post',
-  })
-}
-
-export function register() {
-  return request({
-    url: '/register',
     method: 'post',
   })
 }

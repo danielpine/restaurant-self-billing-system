@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import Antd from 'ant-design-vue'
+import { Form, Button } from 'ant-design-vue'
 import App from './App'
 import router from './router'
 import store from './store'
@@ -13,5 +14,10 @@ import '@/vab'
 //   const { mockXHR } = require('@/utils/static')
 //   mockXHR()
 // }
-
-createApp(App).use(store).use(router).use(Antd).mount('#app')
+createApp(App)
+  .use(store)
+  .use(router)
+  .use(Button)
+  .use(Antd)
+  .use(Form)
+  .mount('#app')
