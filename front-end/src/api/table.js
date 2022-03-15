@@ -7,6 +7,13 @@ export function getList(params) {
     params,
   })
 }
+export function getUsers(params) {
+  return request({
+    url: '/table/getUsers',
+    method: 'get',
+    params,
+  })
+}
 
 export function doEdit(data) {
   return request({

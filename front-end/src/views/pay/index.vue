@@ -364,13 +364,13 @@
       return {
         step: 2, // 1 识别区为空等待放入 2 识别中  3 识别完成待支付 4 刚支付完，等待移走餐盘
         config: {
-          threshold1: 74,
-          threshold2: 74,
-          minArea: 10000,
+          threshold1: 55,
+          threshold2: 40,
+          minArea: 3000,
           maxArea: 50000,
-          detectCount: 10,
+          detectCount: 3,
           frontScale: 50,
-          backScale: 70,
+          backScale: 90,
           kernelSize: 5,
           gaussianSize: 7,
         },
@@ -598,6 +598,8 @@
             this.accumulator++
             console.log(this.step, this.accumulator)
           } else {
+            console.log(JSON.stringify(this.plates))
+            console.log(JSON.stringify(data.plates))
             this.accumulator = 0
           }
           this.plates = data.plates
@@ -811,7 +813,10 @@
       }
     }
   }
-
+  .parent {
+    position: relative;
+    height: 100%;
+  }
   .child {
     position: absolute;
     top: 50%;
