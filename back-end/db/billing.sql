@@ -1,16 +1,16 @@
 /*
 Navicat MySQL Data Transfer
 
-Source Server         : kali
-Source Server Version : 80025
-Source Host           : 192.168.142.134:3307
+Source Server         : local
+Source Server Version : 80019
+Source Host           : localhost:3306
 Source Database       : billing
 
 Target Server Type    : MYSQL
-Target Server Version : 80025
+Target Server Version : 80019
 File Encoding         : 65001
 
-Date: 2022-03-15 09:35:05
+Date: 2022-03-14 11:54:09
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -23,13 +23,13 @@ CREATE TABLE `balance` (
   `user_id` varchar(10) NOT NULL,
   `balance` double(10,2) DEFAULT NULL,
   PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of balance
 -- ----------------------------
 INSERT INTO `balance` VALUES ('0', '1500.00');
-INSERT INTO `balance` VALUES ('2', '53906.00');
+INSERT INTO `balance` VALUES ('2', '53964.50');
 
 -- ----------------------------
 -- Table structure for `balance_detail`
@@ -41,7 +41,7 @@ CREATE TABLE `balance_detail` (
   `before` double(10,0) DEFAULT NULL,
   `after` double(10,0) DEFAULT NULL,
   PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of balance_detail
@@ -59,7 +59,7 @@ CREATE TABLE `booking` (
   `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `status` int DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of booking
@@ -86,9 +86,7 @@ INSERT INTO `booking` VALUES ('21', '2', '2022-03-13', '17:00-19:00', '2022-03-1
 INSERT INTO `booking` VALUES ('22', '2', '2022-03-13', '11:00-13:00', '2022-03-13 19:02:44', '0');
 INSERT INTO `booking` VALUES ('23', '2', '2022-03-13', '11:00-13:00', '2022-03-13 19:02:46', '2');
 INSERT INTO `booking` VALUES ('24', '2', '2022-03-13', '17:00-19:00', '2022-03-13 19:02:50', '2');
-INSERT INTO `booking` VALUES ('25', '2', '2022-03-13', '17:00-19:00', '2022-03-14 07:52:29', '0');
-INSERT INTO `booking` VALUES ('26', '2', '2022-03-14', '7:00-10:00', '2022-03-14 07:52:32', '0');
-INSERT INTO `booking` VALUES ('27', '2', '2022-03-14', '17:00-19:00', '2022-03-14 07:52:34', '1');
+INSERT INTO `booking` VALUES ('25', '2', '2022-03-13', '17:00-19:00', '2022-03-13 19:02:52', '1');
 
 -- ----------------------------
 -- Table structure for `items`
@@ -100,7 +98,7 @@ CREATE TABLE `items` (
   `item_name` varchar(255) DEFAULT NULL,
   `item_price` double(10,0) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of items
@@ -121,7 +119,7 @@ CREATE TABLE `orders` (
   `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `image` longtext,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=75 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=73 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of orders
@@ -150,20 +148,18 @@ INSERT INTO `orders` VALUES ('69', '2', 'user', '117.00', 'balance', '{\"items\"
 INSERT INTO `orders` VALUES ('70', '2', 'user', '117.00', 'qr', '{\"items\": [{\"type\": \"椭圆菜品\", \"unit\": \"¥10\", \"count\": 5}, {\"type\": \"圆形菜品\", \"unit\": \"¥15\", \"count\": 4}, {\"type\": \"方形菜品\", \"unit\": \"¥5\", \"count\": 4}], \"sum\": 130, \"volume\": 13, \"discount\": 0.9, \"pay\": 117}', '202203', '2022-03-13 14:50:36', null);
 INSERT INTO `orders` VALUES ('71', '2', 'user', '117.00', 'balance', '{\"items\": [{\"type\": \"椭圆菜品\", \"unit\": \"¥10\", \"count\": 5}, {\"type\": \"圆形菜品\", \"unit\": \"¥15\", \"count\": 4}, {\"type\": \"方形菜品\", \"unit\": \"¥5\", \"count\": 4}], \"sum\": 130, \"volume\": 13, \"discount\": 0.9, \"pay\": 117}', '202203', '2022-03-13 14:51:38', null);
 INSERT INTO `orders` VALUES ('72', '2', 'user', '117.00', 'balance', '{\"items\": [{\"type\": \"椭圆菜品\", \"unit\": \"¥10\", \"count\": 5}, {\"type\": \"圆形菜品\", \"unit\": \"¥15\", \"count\": 4}, {\"type\": \"方形菜品\", \"unit\": \"¥5\", \"count\": 4}], \"sum\": 130, \"volume\": 13, \"discount\": 0.9, \"pay\": 117}', '202203', '2022-03-13 18:35:13', null);
-INSERT INTO `orders` VALUES ('73', '2', 'user', '58.50', 'balance', '{\"items\": [{\"type\": \"方形菜品\", \"unit\": \"¥5\", \"count\": 3}, {\"type\": \"椭圆菜品\", \"unit\": \"¥10\", \"count\": 2}, {\"type\": \"圆形菜品\", \"unit\": \"¥15\", \"count\": 2}], \"sum\": 65, \"volume\": 7, \"discount\": 0.9, \"pay\": 58.5}', '202203', '2022-03-14 07:52:16', null);
-INSERT INTO `orders` VALUES ('74', '0', 'visitor', '65.00', 'qr', '{\"items\": [{\"type\": \"方形菜品\", \"unit\": \"¥5\", \"count\": 3}, {\"type\": \"椭圆菜品\", \"unit\": \"¥10\", \"count\": 2}, {\"type\": \"圆形菜品\", \"unit\": \"¥15\", \"count\": 2}], \"sum\": 65, \"volume\": 7, \"discount\": 1, \"pay\": 65}', '202203', '2022-03-14 08:53:12', null);
 
 -- ----------------------------
 -- Table structure for `user`
 -- ----------------------------
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
-  `user_id` int NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `username` varchar(10) DEFAULT NULL,
   `passwd` varchar(10) DEFAULT NULL,
   `role` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of user

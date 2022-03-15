@@ -1,10 +1,8 @@
-from datetime import date, datetime
 import sys
 import time
 import logging
 from enum import Enum
 import traceback
-import json
 sys.path.append("..")
 sys.path.append(".")
 logging.basicConfig(level=logging.INFO,
@@ -12,29 +10,13 @@ logging.basicConfig(level=logging.INFO,
 log = logging.getLogger(__name__)
 
 
-class DateEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, datetime):
-            return obj.strftime('%Y-%m-%d %H:%M:%S')
-        elif isinstance(obj, date):
-            return obj.strftime("%Y-%m-%d")
-        else:
-            return obj
-
-
-encoder = DateEncoder()
-
-
 def convert_json_from_lists(keys, data):
     container = []
-    i = 0
     if data:
         for e in data:
             j = {}
-            j['key'] = str(i)
-            i += 1
             for k, v in enumerate(e):
-                j[keys[k]] = encoder.default(v)
+                j[keys[k]] = v
             container.append(j)
     return container
 
@@ -129,10 +111,6 @@ class PySqlTemplate():
         PySqlTemplate.data_source = data_source
 
     @staticmethod
-    def findList(statement, *params):
-        return PySqlTemplate.statement(statement).params(*params).list_json()
-
-    @staticmethod
     def findOne(statement, *params):
         res = PySqlTemplate.statement(statement).params(*params).list_json()
         if len(res) == 0:
@@ -160,7 +138,7 @@ class PySqlTemplate():
                 *map(lambda k: ':' + str(k), params_map.keys())).upper()
         elif PySqlTemplate.data_source.db_type() == DBTypes.MySql:
             self.__statement = self.__statement.replace('?', '%s')
-            # self.__params = [str(x)for x in self.__params]
+            self.__params = [str(x)for x in self.__params]
 
     def params(self, *params):
         self.__params = params

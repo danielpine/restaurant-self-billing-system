@@ -31,10 +31,6 @@ class RegisterHandler(tornado.web.RequestHandler):
     def post(self):
         form = json.loads(self.request.body)
         log.info(form)
-        if 'user' in form and 'pass' in form:
-            PySqlTemplate.save(
-                'INSERT INTO user(username, passwd, role) VALUES (?,?,?)', form['user'], form['pass'], 'member')
-            self.write({"code": 200, "msg": "success", "data": 'ok'})
-        else:
-            self.write(
-                {"code": 400, "msg": "invalid parameters", "data": 'no'})
+        # count = PySqlTemplate.count(
+        #     'select count(*) from user where username=?', form['username'])
+        self.write({"code": 200, "msg": "success", "data": 'ok'})

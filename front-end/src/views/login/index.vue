@@ -10,7 +10,7 @@
             <a-form-item>
               <a-input v-model:value="form.username" placeholder="Username">
                 <template v-slot:prefix>
-                  <UserOutlined style="color: rgba(0, 0, 0, 0.25)" />
+                  <UserOutlined style="color: rgba(0, 0, 0, 0.25);" />
                 </template>
               </a-input>
             </a-form-item>
@@ -21,7 +21,7 @@
                 placeholder="Password"
               >
                 <template v-slot:prefix>
-                  <LockOutlined style="color: rgba(0, 0, 0, 0.25)" />
+                  <LockOutlined style="color: rgba(0, 0, 0, 0.25);" />
                 </template>
               </a-input>
             </a-form-item>
@@ -33,7 +33,7 @@
               >
                 登录
               </a-button>
-              <div style="width: 100%; text-align: right; margin-top: 5px">
+              <div style="width: 100%; text-align: right; margin-top: 5px;">
                 <a class="visitor" html-type="submit" @click="visitorLogin">
                   游客登录
                 </a>
@@ -43,11 +43,11 @@
         </div>
       </a-col>
     </a-row>
-    <!-- <div class="login-container-tips">
+    <div class="login-container-tips">
       基于vue{{ dependencies['vue'] }}
       + ant-design-vue
       {{ dependencies['ant-design-vue'] }}开发
-    </div> -->
+    </div>
   </div>
 </template>
 <script>
@@ -87,7 +87,7 @@
       },
     },
     mounted() {
-      this.form.username = 'admin'
+      this.form.username = 'user'
       this.form.password = '123456'
       /*  setTimeout(() => {
         this.handleSubmit()
