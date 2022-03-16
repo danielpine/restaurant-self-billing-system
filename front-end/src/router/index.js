@@ -25,7 +25,7 @@ const fullRole = ['admin', 'member', 'visitor']
 const visitor = ['visitor']
 const member = ['member']
 const admin = ['admin']
-const vab = ['admin', 'member']
+const vab = ['never']
 
 export const asyncRoutes = [
   {

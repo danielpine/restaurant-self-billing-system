@@ -35,6 +35,8 @@ def convert_json_from_lists(keys, data):
             i += 1
             for k, v in enumerate(e):
                 j[keys[k]] = encoder.default(v)
+            if 'id' in j:
+                j['key'] = j['id']
             container.append(j)
     return container
 
@@ -143,6 +145,10 @@ class PySqlTemplate():
     @staticmethod
     def count(statement, *params):
         return PySqlTemplate.statement(statement).params(*params).__count()
+
+    @staticmethod
+    def delete(statement, *params):
+        PySqlTemplate.statement(statement).params(*params).execute()
 
     @staticmethod
     def save(statement, *params):

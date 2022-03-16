@@ -1,16 +1,16 @@
 /*
 Navicat MySQL Data Transfer
 
-Source Server         : kali
-Source Server Version : 80025
-Source Host           : 192.168.142.134:3307
+Source Server         : local
+Source Server Version : 80019
+Source Host           : localhost:3306
 Source Database       : billing
 
 Target Server Type    : MYSQL
-Target Server Version : 80025
+Target Server Version : 80019
 File Encoding         : 65001
 
-Date: 2022-03-15 09:35:05
+Date: 2022-03-15 17:35:10
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -23,13 +23,14 @@ CREATE TABLE `balance` (
   `user_id` varchar(10) NOT NULL,
   `balance` double(10,2) DEFAULT NULL,
   PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of balance
 -- ----------------------------
 INSERT INTO `balance` VALUES ('0', '1500.00');
 INSERT INTO `balance` VALUES ('2', '53906.00');
+INSERT INTO `balance` VALUES ('3', '1500.00');
 
 -- ----------------------------
 -- Table structure for `balance_detail`
@@ -41,7 +42,7 @@ CREATE TABLE `balance_detail` (
   `before` double(10,0) DEFAULT NULL,
   `after` double(10,0) DEFAULT NULL,
   PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of balance_detail
@@ -59,7 +60,7 @@ CREATE TABLE `booking` (
   `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `status` int DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of booking
@@ -89,6 +90,11 @@ INSERT INTO `booking` VALUES ('24', '2', '2022-03-13', '17:00-19:00', '2022-03-1
 INSERT INTO `booking` VALUES ('25', '2', '2022-03-13', '17:00-19:00', '2022-03-14 07:52:29', '0');
 INSERT INTO `booking` VALUES ('26', '2', '2022-03-14', '7:00-10:00', '2022-03-14 07:52:32', '0');
 INSERT INTO `booking` VALUES ('27', '2', '2022-03-14', '17:00-19:00', '2022-03-14 07:52:34', '1');
+INSERT INTO `booking` VALUES ('28', '3', '2022-03-15', '7:00-10:00', '2022-03-15 15:13:57', '2');
+INSERT INTO `booking` VALUES ('29', '3', '2022-03-15', '7:00-10:00', '2022-03-15 15:14:00', '0');
+INSERT INTO `booking` VALUES ('30', '3', '2022-03-15', '7:00-10:00', '2022-03-15 15:14:03', '0');
+INSERT INTO `booking` VALUES ('31', '3', '2022-03-15', '11:00-13:00', '2022-03-15 15:14:06', '2');
+INSERT INTO `booking` VALUES ('32', '3', '2022-03-15', '11:00-13:00', '2022-03-15 15:14:11', '0');
 
 -- ----------------------------
 -- Table structure for `items`
@@ -99,12 +105,16 @@ CREATE TABLE `items` (
   `item_type` varchar(255) DEFAULT NULL,
   `item_name` varchar(255) DEFAULT NULL,
   `item_price` double(10,0) DEFAULT NULL,
+  `inventory` int DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of items
 -- ----------------------------
+INSERT INTO `items` VALUES ('1', '方形', '方形菜品', '5', '100');
+INSERT INTO `items` VALUES ('2', '圆形', '圆形菜品', '10', '1222');
+INSERT INTO `items` VALUES ('3', '椭圆', '椭圆菜品', '15', '123');
 
 -- ----------------------------
 -- Table structure for `orders`
@@ -121,7 +131,7 @@ CREATE TABLE `orders` (
   `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `image` longtext,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=75 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=75 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of orders
@@ -163,10 +173,11 @@ CREATE TABLE `user` (
   `passwd` varchar(10) DEFAULT NULL,
   `role` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of user
 -- ----------------------------
 INSERT INTO `user` VALUES ('1', 'admin', '123456', 'admin');
 INSERT INTO `user` VALUES ('2', 'user', '123456', 'member');
+INSERT INTO `user` VALUES ('3', 'user1', '123456', 'member');
