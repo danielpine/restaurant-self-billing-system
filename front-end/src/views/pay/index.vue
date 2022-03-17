@@ -263,14 +263,14 @@
         </div>
       </a-col>
       <a-col flex="auto" style="text-align: center">
-        <a-button
+        <!-- <a-button
           type="dashed"
           shape="circle"
           class="fix-top-right"
           @click="showDrawer"
         >
           <vab-icon :icon="'bug-line'"></vab-icon>
-        </a-button>
+        </a-button> -->
         <a-card
           title="合并订单"
           :headStyle="{ background: 'aliceblue' }"

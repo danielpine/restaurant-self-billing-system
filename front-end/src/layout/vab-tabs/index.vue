@@ -1,5 +1,5 @@
 <template>
-  <div class="vab-tabs">
+  <div class="vab-tabs" v-show="show">
     <div class="vab-tabs-left-panel">
       <a-tabs
         @tab-click="handleTabClick"
@@ -56,6 +56,7 @@
         affixTabs: [],
         tabActive: null,
         created: false,
+        show: false,
       }
     },
     computed: {
