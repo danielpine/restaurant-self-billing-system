@@ -1,6 +1,3 @@
-pip install flask
-pip install gevent-websocket
-pip install flask-sockets
 pip install numpy
 pip install tornado
 pip install pillow
